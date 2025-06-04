@@ -36,7 +36,7 @@
             </div>
           </div>
 
-          <div v-if="isUploadSelected" class="lenshero-upload-input-section">
+          <div class="lenshero-upload-input-section">
             <input
               type="file"
               ref="fileInput"
@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
 
@@ -149,12 +149,18 @@ const IMAGE_PATHS = {
   UPLOAD_ICON: `${CDN_URL}/upload-icon.png`,
 };
 
+// Cache constants
+const PRICING_CACHE_KEY = "lensheroPricingCache";
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
 // State
 const currentPage = ref(1);
 const isLoading = ref(false);
 const isUploadSelected = ref(false);
-const previewUrl = ref(null);
-const hasUploadedFile = ref(false);
+const previewUrl = ref(sessionStorage.getItem("lensheroPreviewUrl") || null);
+const hasUploadedFile = ref(
+  sessionStorage.getItem("lensheroHasUploadedFile") === "true"
+);
 const termsAccepted = ref(false);
 const selectedOption = ref("1");
 const pricingOptions = ref({});
@@ -172,7 +178,10 @@ function closeModal() {
 
 function handleUploadClick() {
   isUploadSelected.value = true;
-  fileInput.value.click();
+  // Ensure the file input is clicked immediately
+  nextTick(() => {
+    fileInput.value.click();
+  });
 }
 
 async function handleFileChange(event) {
@@ -182,6 +191,7 @@ async function handleFileChange(event) {
     const reader = new FileReader();
     reader.onload = (e) => {
       previewUrl.value = e.target.result;
+      sessionStorage.setItem("lensheroPreviewUrl", e.target.result);
     };
     reader.readAsDataURL(file);
 
@@ -200,6 +210,7 @@ async function handleFileChange(event) {
     try {
       await storeProductWithPrescription(formData);
       hasUploadedFile.value = true;
+      sessionStorage.setItem("lensheroHasUploadedFile", "true");
     } catch (error) {
       console.error("Upload error:", error);
     } finally {
@@ -273,11 +284,38 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
 
 async function fetchPricing() {
   try {
+    // Check cache first
+    const cachedData = localStorage.getItem(PRICING_CACHE_KEY);
+    if (cachedData) {
+      const { data, timestamp } = JSON.parse(cachedData);
+      // Check if cache is still valid
+      if (Date.now() - timestamp < CACHE_EXPIRY) {
+        pricingOptions.value = data;
+        return;
+      }
+    }
+
+    // If no cache or expired, fetch from API
     const response = await fetch(`${API_ENDPOINT}pricing`);
     const data = await response.json();
     pricingOptions.value = data.add_ons;
+
+    // Update cache
+    localStorage.setItem(
+      PRICING_CACHE_KEY,
+      JSON.stringify({
+        data: data.add_ons,
+        timestamp: Date.now(),
+      })
+    );
   } catch (error) {
     console.error("Error fetching pricing:", error);
+    // If API fails, try to use cached data even if expired
+    const cachedData = localStorage.getItem(PRICING_CACHE_KEY);
+    if (cachedData) {
+      const { data } = JSON.parse(cachedData);
+      pricingOptions.value = data;
+    }
   }
 }
 
@@ -306,6 +344,8 @@ onMounted(() => {
   border-radius: 8px;
   width: 500px;
   max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   text-align: center;
   box-shadow: 0px 0px 15px var(--shadow-color);
   position: relative;

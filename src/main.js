@@ -1,5 +1,4 @@
 import { createApp, h } from "vue";
-// import Widget from "./components/Widget.vue";
 import LensheroWidget from "./components/LensheroWidget.vue";
 import App from "./App.vue";
 import "./style.css";
@@ -21,7 +20,15 @@ function initWidget(containerId = "lenshero-widget") {
     },
   });
 
-  app.mount(`#${containerId}`);
+  const instance = app.mount(`#${containerId}`);
+
+  // Make the widget available globally with methods
+  window.VueWidget = {
+    init: initWidget,
+    setProductOrderKey: (key) => {
+      instance.setProductOrderKey(key);
+    },
+  };
 }
 
 // Check if we're in development mode (has #app element)

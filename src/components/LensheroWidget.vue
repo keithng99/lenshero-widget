@@ -14,7 +14,7 @@ import { ref, onMounted } from "vue";
 import LensheroModal from "./LensheroModal.vue";
 
 const showModal = ref(false);
-const productOrderKey = ref(`lenshero-${generateUUID()}`);
+const productOrderKey = ref("");
 
 function generateUUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -26,15 +26,25 @@ function generateUUID() {
 
 function openModal() {
   showModal.value = true;
-  // Store the order key in session storage
-  sessionStorage.setItem("lensheroOrderKey", productOrderKey.value);
+  // Only generate new order key if we don't have one
+  if (!productOrderKey.value) {
+    productOrderKey.value = `lenshero-${generateUUID()}`;
+  }
 }
 
 function closeModal() {
   showModal.value = false;
-  // Generate new order key for next time
-  productOrderKey.value = `lenshero-${generateUUID()}`;
 }
+
+// Add method to set product order key from external website
+function setProductOrderKey(key) {
+  productOrderKey.value = key;
+}
+
+// Expose the method to the window object
+defineExpose({
+  setProductOrderKey,
+});
 </script>
 
 <style scoped>
