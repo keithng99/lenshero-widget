@@ -30,8 +30,9 @@ export default defineConfig(({ command, mode }) => {
     build: {
       lib: {
         entry: resolve(__dirname, "src/main.js"),
-        name: "VueWidget",
-        fileName: "vue-widget",
+        name: "LensheroWidget",
+        fileName: (format) =>
+          `lenshero-widget.${format === "umd" ? "js" : format}`,
         formats: ["umd"],
       },
       rollupOptions: {
@@ -39,20 +40,18 @@ export default defineConfig(({ command, mode }) => {
         output: {
           inlineDynamicImports: true,
           format: "umd",
-          name: "VueWidget",
+          name: "LensheroWidget",
           extend: true,
           globals: {
             vue: "Vue",
           },
-          assetFileNames: (assetInfo) => {
-            if (assetInfo.names.includes("style.css")) return "vue-widget.css";
-            return assetInfo.names[0];
-          },
+          assetFileNames: "lenshero-widget.css",
         },
       },
       minify: true,
       sourcemap: true,
       cssCodeSplit: false,
+      cssFileName: "lenshero-widget.css",
     },
   };
 });
