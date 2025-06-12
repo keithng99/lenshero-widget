@@ -26,10 +26,8 @@ function generateUUID() {
 
 function openModal() {
   showModal.value = true;
-  // Only generate new order key if we don't have one
-  if (!productOrderKey.value) {
-    productOrderKey.value = `lenshero-${generateUUID()}`;
-  }
+  // Always generate a new order key when opening the modal
+  productOrderKey.value = `lenshero-${generateUUID()}`;
 }
 
 function closeModal() {
@@ -61,3 +59,7 @@ defineExpose({
   text-decoration: underline;
 }
 </style>
+
+<!-- TODO:
+- Overlay not cover the entire modal
+-->

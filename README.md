@@ -61,3 +61,5 @@ src/
 ## License
 
 MIT
+
+aws cloudfront create-invalidation --distribution-id E16O7OKA9GSAIU --paths "/script.js" "/style.css"

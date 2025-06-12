@@ -143,11 +143,15 @@ const emit = defineEmits(["close"]);
 
 // Constants
 const API_ENDPOINT =
+  import.meta.env.VITE_API_ENDPOINT ||
   "https://zyf01zl144.execute-api.eu-north-1.amazonaws.com/latest/lens-plugin/";
-const CDN_URL = "https://d2mdmq3z3nc5ef.cloudfront.net";
+const CDN_URL =
+  import.meta.env.VITE_CDN_URL || "https://d2mdmq3z3nc5ef.cloudfront.net";
 const IMAGE_PATHS = {
   UPLOAD_ICON: `${CDN_URL}/upload-icon.png`,
 };
+// Get widgetId from the script tag
+const widgetId = ref(null);
 
 // Cache constants
 const PRICING_CACHE_KEY = "lensheroPricingCache";
@@ -157,14 +161,50 @@ const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 const currentPage = ref(1);
 const isLoading = ref(false);
 const isUploadSelected = ref(false);
-const previewUrl = ref(sessionStorage.getItem("lensheroPreviewUrl") || null);
-const hasUploadedFile = ref(
-  sessionStorage.getItem("lensheroHasUploadedFile") === "true"
-);
+const previewUrl = ref(null);
+const hasUploadedFile = ref(false);
 const termsAccepted = ref(false);
 const selectedOption = ref("1");
 const pricingOptions = ref({});
 const fileInput = ref(null);
+const token = ref(null);
+
+function isTokenExpired(token) {
+  try {
+    // JWT tokens are in format: header.payload.signature
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    // exp is in seconds, Date.now() is in milliseconds
+    return payload.exp * 1000 < Date.now();
+  } catch (e) {
+    // If we can't decode the token, consider it expired
+    return true;
+  }
+}
+
+async function getWidgetToken() {
+  // Check if token exists and is not expired
+  if (token.value && !isTokenExpired(token.value)) {
+    return token.value;
+  }
+
+  const timestamp = Math.floor(Date.now() / 1000);
+
+  // send post request to generate token
+  const response = await fetch(
+    `${API_ENDPOINT}/authentication/lenshero-widget-token`,
+    {
+      method: "POST",
+      headers: {
+        "X-Widget-Timestamp": timestamp,
+        "X-Widget-ID": widgetId.value,
+        Origin: window.location.origin,
+      },
+    }
+  );
+  const data = await response.json();
+  token.value = data.access_token;
+  return token.value;
+}
 
 // Computed
 const canSubmit = computed(() => {
@@ -191,7 +231,6 @@ async function handleFileChange(event) {
     const reader = new FileReader();
     reader.onload = (e) => {
       previewUrl.value = e.target.result;
-      sessionStorage.setItem("lensheroPreviewUrl", e.target.result);
     };
     reader.readAsDataURL(file);
 
@@ -210,7 +249,6 @@ async function handleFileChange(event) {
     try {
       await storeProductWithPrescription(formData);
       hasUploadedFile.value = true;
-      sessionStorage.setItem("lensheroHasUploadedFile", "true");
     } catch (error) {
       console.error("Upload error:", error);
     } finally {
@@ -220,10 +258,14 @@ async function handleFileChange(event) {
 }
 
 async function storeProductWithPrescription(formData) {
+  const token = await getWidgetToken();
   const response = await fetch(
-    `${API_ENDPOINT}store-product-with-prescription`,
+    `${API_ENDPOINT}/latest/lens-plugin/store-product-with-prescription`,
     {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formData,
     }
   );
@@ -233,9 +275,58 @@ async function storeProductWithPrescription(formData) {
   }
 }
 
-function nextPage() {
+async function fetchPricing() {
+  try {
+    // Check cache first
+    const cachedData = sessionStorage.getItem(PRICING_CACHE_KEY);
+    if (cachedData) {
+      const { data, timestamp } = JSON.parse(cachedData);
+      // Check if cache is still valid
+      if (Date.now() - timestamp < CACHE_EXPIRY && data && data.length > 0) {
+        pricingOptions.value = data;
+        return;
+      }
+    }
+
+    // If no cache or expired, fetch from API
+    const token = await getWidgetToken();
+    const response = await fetch(`${API_ENDPOINT}/latest/lens-plugin/pricing`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    pricingOptions.value = data.add_ons;
+
+    // Update cache
+    sessionStorage.setItem(
+      PRICING_CACHE_KEY,
+      JSON.stringify({
+        data: data.add_ons,
+        timestamp: Date.now(),
+      })
+    );
+  } catch (error) {
+    console.error("Error fetching pricing:", error);
+    // If API fails, try to use cached data even if expired
+    const cachedData = sessionStorage.getItem(PRICING_CACHE_KEY);
+    if (cachedData) {
+      const { data } = JSON.parse(cachedData);
+      pricingOptions.value = data;
+    }
+  }
+}
+
+async function nextPage() {
   if (currentPage.value === 1) {
-    currentPage.value = 2;
+    try {
+      await fetchPricing();
+      currentPage.value = 2;
+    } catch (error) {
+      console.error("Error fetching pricing:", error);
+      // Still proceed to next page even if pricing fetch fails
+      currentPage.value = 2;
+    }
   }
 }
 
@@ -267,11 +358,15 @@ async function submitOrder() {
 }
 
 async function sendOrderConfirmation(productOrderKey, addOn) {
+  const token = await getWidgetToken();
   const response = await fetch(
-    `${API_ENDPOINT}confirm-product/${productOrderKey}`,
+    `${API_ENDPOINT}/latest/lens-plugin/confirm-product/${productOrderKey}`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ add_on: addOn }),
     }
   );
@@ -282,45 +377,19 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
   return true;
 }
 
-async function fetchPricing() {
-  try {
-    // Check cache first
-    const cachedData = localStorage.getItem(PRICING_CACHE_KEY);
-    if (cachedData) {
-      const { data, timestamp } = JSON.parse(cachedData);
-      // Check if cache is still valid
-      if (Date.now() - timestamp < CACHE_EXPIRY) {
-        pricingOptions.value = data;
-        return;
-      }
-    }
-
-    // If no cache or expired, fetch from API
-    const response = await fetch(`${API_ENDPOINT}pricing`);
-    const data = await response.json();
-    pricingOptions.value = data.add_ons;
-
-    // Update cache
-    localStorage.setItem(
-      PRICING_CACHE_KEY,
-      JSON.stringify({
-        data: data.add_ons,
-        timestamp: Date.now(),
-      })
-    );
-  } catch (error) {
-    console.error("Error fetching pricing:", error);
-    // If API fails, try to use cached data even if expired
-    const cachedData = localStorage.getItem(PRICING_CACHE_KEY);
-    if (cachedData) {
-      const { data } = JSON.parse(cachedData);
-      pricingOptions.value = data;
-    }
-  }
-}
-
 onMounted(() => {
-  fetchPricing();
+  // Get widget ID from script tag
+  const scriptTag = document.querySelector("script[lenshero-widget-id]");
+
+  if (scriptTag) {
+    // Widget mode
+    const id = scriptTag.getAttribute("lenshero-widget-id");
+    widgetId.value = id;
+  } else {
+    // Development mode - use environment variable
+    console.log("Development mode - using environment variable widget ID");
+    widgetId.value = import.meta.env.VITE_WIDGET_ID;
+  }
 });
 </script>
 
@@ -344,7 +413,7 @@ onMounted(() => {
   border-radius: 8px;
   width: 500px;
   max-width: 90%;
-  max-height: 90vh;
+  max-height: 70vh;
   overflow-y: auto;
   text-align: center;
   box-shadow: 0px 0px 15px var(--shadow-color);
@@ -366,7 +435,9 @@ onMounted(() => {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(
+    100% - 120px
+  ); /* Subtract approximate height of support and powered by sections */
   background-color: rgba(0, 0, 0, 0.4);
   z-index: 10 !important;
   display: flex;
