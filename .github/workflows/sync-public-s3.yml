@@ -47,4 +47,4 @@ jobs:
         run: |
           aws s3 cp ./dist/vue-widget.umd.cjs ${{ steps.path.outputs.s3-path }}vue-widget.umd.cjs
           aws s3 cp ./dist/vue-widget.css ${{ steps.path.outputs.s3-path }}vue-widget.css
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/public/${GITHUB_REF##*/}/vue-widget.umd.cjs" "/public/${GITHUB_REF##*/}/vue-widget.css"

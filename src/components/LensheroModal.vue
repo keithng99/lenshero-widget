@@ -144,7 +144,7 @@ const emit = defineEmits(["close"]);
 // Constants
 const API_ENDPOINT =
   import.meta.env.VITE_API_ENDPOINT ||
-  "https://zyf01zl144.execute-api.eu-north-1.amazonaws.com/latest/lens-plugin/";
+  "https://zyf01zl144.execute-api.eu-north-1.amazonaws.com";
 const CDN_URL =
   import.meta.env.VITE_CDN_URL || "https://d2mdmq3z3nc5ef.cloudfront.net";
 const IMAGE_PATHS = {
@@ -260,7 +260,7 @@ async function handleFileChange(event) {
 async function storeProductWithPrescription(formData) {
   const token = await getWidgetToken();
   const response = await fetch(
-    `${API_ENDPOINT}/latest/lens-plugin/store-product-with-prescription`,
+    `${API_ENDPOINT}/lens-plugin/store-product-with-prescription`,
     {
       method: "POST",
       headers: {
@@ -290,7 +290,7 @@ async function fetchPricing() {
 
     // If no cache or expired, fetch from API
     const token = await getWidgetToken();
-    const response = await fetch(`${API_ENDPOINT}/latest/lens-plugin/pricing`, {
+    const response = await fetch(`${API_ENDPOINT}/lens-plugin/pricing`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -360,7 +360,7 @@ async function submitOrder() {
 async function sendOrderConfirmation(productOrderKey, addOn) {
   const token = await getWidgetToken();
   const response = await fetch(
-    `${API_ENDPOINT}/latest/lens-plugin/confirm-product/${productOrderKey}`,
+    `${API_ENDPOINT}/lens-plugin/confirm-product/${productOrderKey}`,
     {
       method: "POST",
       headers: {
