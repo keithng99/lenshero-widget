@@ -379,11 +379,11 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
 
 onMounted(() => {
   // Get widget ID from script tag
-  const scriptTag = document.querySelector("script[lenshero-widget-id]");
+  const scriptTag = document.querySelector("script[data-lenshero-widget-id]");
 
   if (scriptTag) {
     // Widget mode
-    const id = scriptTag.getAttribute("lenshero-widget-id");
+    const id = scriptTag.getAttribute("data-lenshero-widget-id");
     widgetId.value = id;
   } else {
     // Development mode - use environment variable

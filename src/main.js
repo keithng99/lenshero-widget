@@ -38,11 +38,24 @@ if (document.getElementById("app")) {
 } else {
   // Widget mode - initialize the widget
   if (typeof window !== "undefined") {
-    // Wait for DOM to be ready
+    // Function to check for script tag
+    const checkForScriptTag = () => {
+      const scriptTag = document.querySelector(
+        "script[data-lenshero-widget-id]"
+      );
+      if (scriptTag) {
+        initWidget();
+      } else {
+        // If not found, try again after a short delay
+        setTimeout(checkForScriptTag, 100);
+      }
+    };
+
+    // Start checking for script tag
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => initWidget());
+      document.addEventListener("DOMContentLoaded", checkForScriptTag);
     } else {
-      initWidget();
+      checkForScriptTag();
     }
   }
 
