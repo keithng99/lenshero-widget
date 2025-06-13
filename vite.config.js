@@ -14,8 +14,6 @@ export default defineConfig(({ command, mode }) => {
     VITE_CDN_URL: env.VITE_CDN_URL,
   };
 
-  console.log(`Running in ${mode} mode with command: ${command}`);
-
   return {
     plugins: [vue()],
     define: {

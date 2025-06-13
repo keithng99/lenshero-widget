@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import LensheroModal from "./LensheroModal.vue";
 
 const showModal = ref(false);
@@ -59,7 +59,3 @@ defineExpose({
   text-decoration: underline;
 }
 </style>
-
-<!-- TODO:
-- Overlay not cover the entire modal
--->

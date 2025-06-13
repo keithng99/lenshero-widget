@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, nextTick } from "vue";
 import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
 
@@ -273,12 +273,9 @@ async function fetchPricing() {
     // Check cache first
     const cachedData = sessionStorage.getItem(PRICING_CACHE_KEY);
     if (cachedData) {
-      console.log("cachedData", cachedData);
       const { data, timestamp } = JSON.parse(cachedData);
       // Check if cache is still valid
-      console.log(Date.now() - timestamp < CACHE_EXPIRY);
       if (Date.now() - timestamp < CACHE_EXPIRY && data) {
-        console.log("data", data);
         pricingOptions.value = data;
         return;
       }
@@ -416,9 +413,7 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(
-    100% - 120px
-  ); /* Subtract approximate height of support and powered by sections */
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.4);
   z-index: 10 !important;
   display: flex;
