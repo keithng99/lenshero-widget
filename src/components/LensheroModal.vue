@@ -273,9 +273,12 @@ async function fetchPricing() {
     // Check cache first
     const cachedData = sessionStorage.getItem(PRICING_CACHE_KEY);
     if (cachedData) {
+      console.log("cachedData", cachedData);
       const { data, timestamp } = JSON.parse(cachedData);
       // Check if cache is still valid
-      if (Date.now() - timestamp < CACHE_EXPIRY && data && data.length > 0) {
+      console.log(Date.now() - timestamp < CACHE_EXPIRY);
+      if (Date.now() - timestamp < CACHE_EXPIRY && data) {
+        console.log("data", data);
         pricingOptions.value = data;
         return;
       }
