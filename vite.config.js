@@ -12,7 +12,6 @@ export default defineConfig(({ command, mode }) => {
   const envVars = {
     VITE_API_ENDPOINT: env.VITE_API_ENDPOINT,
     VITE_CDN_URL: env.VITE_CDN_URL,
-    VITE_WIDGET_ID: env.VITE_WIDGET_ID,
   };
 
   console.log(`Running in ${mode} mode with command: ${command}`);

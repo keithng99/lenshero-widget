@@ -142,16 +142,11 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 // Constants
-const API_ENDPOINT =
-  import.meta.env.VITE_API_ENDPOINT ||
-  "https://zyf01zl144.execute-api.eu-north-1.amazonaws.com";
-const CDN_URL =
-  import.meta.env.VITE_CDN_URL || "https://d2mdmq3z3nc5ef.cloudfront.net";
+const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
+const CDN_URL = import.meta.env.VITE_CDN_URL;
 const IMAGE_PATHS = {
   UPLOAD_ICON: `${CDN_URL}/upload-icon.png`,
 };
-// Get widgetId from the script tag
-const widgetId = ref(null);
 
 // Cache constants
 const PRICING_CACHE_KEY = "lensheroPricingCache";
@@ -196,7 +191,6 @@ async function getWidgetToken() {
       method: "POST",
       headers: {
         "X-Widget-Timestamp": timestamp,
-        "X-Widget-ID": widgetId.value,
         Origin: window.location.origin,
       },
     }
@@ -376,21 +370,6 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
   }
   return true;
 }
-
-onMounted(() => {
-  // Get widget ID from script tag
-  const scriptTag = document.querySelector("script[data-lenshero-widget-id]");
-
-  if (scriptTag) {
-    // Widget mode
-    const id = scriptTag.getAttribute("data-lenshero-widget-id");
-    widgetId.value = id;
-  } else {
-    // Development mode - use environment variable
-    console.log("Development mode - using environment variable widget ID");
-    widgetId.value = import.meta.env.VITE_WIDGET_ID;
-  }
-});
 </script>
 
 <style scoped>
