@@ -186,11 +186,10 @@ async function getWidgetToken() {
 
   // send post request to generate token
   const response = await fetch(
-    `${API_ENDPOINT}/authentication/lenshero-widget-token`,
+    `${API_ENDPOINT}/authentication/lenshero-widget-token?timestamp=${timestamp}`,
     {
-      method: "POST",
+      method: "GET",
       headers: {
-        "X-Widget-Timestamp": timestamp,
         Origin: window.location.origin,
       },
     }
