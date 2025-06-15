@@ -23,7 +23,7 @@ function initWidget(containerId = "lenshero-widget") {
   const instance = app.mount(`#${containerId}`);
 
   // Make the widget available globally with methods
-  window.VueWidget = {
+  window.LensheroWidget = {
     init: initWidget,
     setProductOrderKey: (key) => {
       instance.setProductOrderKey(key);
@@ -47,7 +47,7 @@ if (document.getElementById("app")) {
   }
 
   // Make the widget available globally
-  window.VueWidget = {
+  window.LensheroWidget = {
     init: initWidget,
   };
 }

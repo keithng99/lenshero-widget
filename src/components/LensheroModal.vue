@@ -9,6 +9,11 @@
         </div>
       </div>
 
+      <!-- Error Display -->
+      <div v-if="errorMessage" class="error-display">
+        {{ errorMessage }}
+      </div>
+
       <span class="close-modal" @click="closeModal">&times;</span>
 
       <!-- Page 1: Prescription Upload -->
@@ -50,6 +55,12 @@
               alt="Prescription Preview"
               class="prescription-preview"
             />
+            <div v-if="hasUploadedFile" class="prescription-message">
+              We detected
+              {{ isProgressive ? "Progressive" : "Standard" }} lenses in your
+              prescription. The price will adjust accordingly on the next page.
+              If this is incorrect, you can toggle to update it.
+            </div>
           </div>
         </div>
 
@@ -66,6 +77,21 @@
         <h1>Lens Features</h1>
         <p class="rx-subtitle">Choose the types of lens features you want</p>
 
+        <!-- Only show toggle if prescription is uploaded -->
+        <div v-if="hasUploadedFile" class="lens-type-toggle">
+          <label class="toggle-label">
+            <div class="toggle-switch">
+              <input type="checkbox" v-model="isProgressive" />
+              <span class="toggle-slider"></span>
+            </div>
+            <span class="toggle-text">
+              {{ isProgressive ? "Progressive" : "Standard" }} lenses price.
+              Toggle to see {{ isProgressive ? "Standard" : "Progressive" }}
+              lenses price.
+            </span>
+          </label>
+        </div>
+
         <div class="lenshero-pricing-container">
           <div
             v-for="(item, id) in pricingOptions"
@@ -77,19 +103,20 @@
             <input
               type="radio"
               :name="item.name"
-              :value="item.price"
+              :value="item.progressivePrice ? isProgressive : item.price"
               :checked="selectedOption === id"
               style="display: none"
             />
             <div class="lenshero-pricing-item-header">
               <h4>{{ item.name }}</h4>
               <div class="lenshero-pricing-item-price">
-                {{ item.price }} {{ item.currency }}
+                {{ isProgressive ? item.progressivePrice : item.price }}
+                {{ item.currency }}
               </div>
             </div>
             <div class="lenshero-pricing-item-features">
               <ul>
-                <li v-for="feature in item.included_features" :key="feature">
+                <li v-for="feature in item.includedFeatures" :key="feature">
                   {{ feature }}
                 </li>
               </ul>
@@ -128,7 +155,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, onMounted } from "vue";
 import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
 
@@ -163,6 +190,13 @@ const selectedOption = ref("1");
 const pricingOptions = ref({});
 const fileInput = ref(null);
 const token = ref(null);
+const isProgressive = ref(false);
+const errorMessage = ref(null);
+
+// Fetch pricing when component is mounted
+onMounted(async () => {
+  await fetchPricing();
+});
 
 function isTokenExpired(token) {
   try {
@@ -206,6 +240,8 @@ const canSubmit = computed(() => {
 
 // Methods
 function closeModal() {
+  isProgressive.value = false;
+  errorMessage.value = null;
   emit("close");
 }
 
@@ -229,6 +265,7 @@ async function handleFileChange(event) {
 
     // Upload file
     isLoading.value = true;
+    errorMessage.value = null;
     const formData = new FormData();
     formData.append(
       "product_data",
@@ -243,7 +280,7 @@ async function handleFileChange(event) {
       await storeProductWithPrescription(formData);
       hasUploadedFile.value = true;
     } catch (error) {
-      console.error("Upload error:", error);
+      errorMessage.value = "Failed to upload prescription. Please try again.";
     } finally {
       isLoading.value = false;
     }
@@ -265,6 +302,23 @@ async function storeProductWithPrescription(formData) {
   const data = await response.json();
   if (data.status !== "success") {
     throw new Error(data.message);
+  }
+
+  try {
+    const ocrData = data.data.ocrPrescription;
+    // Only suggest progressive if we're very confident about the ADD values
+    const hasClearProgressive =
+      (ocrData.leftEye.ADD1 && ocrData.rightEye.ADD1) ||
+      (ocrData.leftEye.ADD2 && ocrData.rightEye.ADD2);
+
+    if (hasClearProgressive) {
+      isProgressive.value = true;
+    } else {
+      isProgressive.value = false;
+    }
+  } catch (error) {
+    errorMessage.value =
+      "Error processing prescription data. Please try again.";
   }
 }
 
@@ -289,18 +343,18 @@ async function fetchPricing() {
       },
     });
     const data = await response.json();
-    pricingOptions.value = data.add_ons;
+    pricingOptions.value = data.addOns;
 
     // Update cache
     sessionStorage.setItem(
       PRICING_CACHE_KEY,
       JSON.stringify({
-        data: data.add_ons,
+        data: data.addOns,
         timestamp: Date.now(),
       })
     );
   } catch (error) {
-    console.error("Error fetching pricing:", error);
+    errorMessage.value = "Failed to fetch pricing. Please refresh the page.";
     // If API fails, try to use cached data even if expired
     const cachedData = sessionStorage.getItem(PRICING_CACHE_KEY);
     if (cachedData) {
@@ -312,14 +366,7 @@ async function fetchPricing() {
 
 async function nextPage() {
   if (currentPage.value === 1) {
-    try {
-      await fetchPricing();
-      currentPage.value = 2;
-    } catch (error) {
-      console.error("Error fetching pricing:", error);
-      // Still proceed to next page even if pricing fetch fails
-      currentPage.value = 2;
-    }
+    currentPage.value = 2;
   }
 }
 
@@ -346,7 +393,7 @@ async function submitOrder() {
     await sendOrderConfirmation(props.productOrderKey, variantPayload);
     closeModal();
   } catch (error) {
-    console.error("Order confirmation error:", error);
+    errorMessage.value = "Failed to submit order. Please try again.";
   }
 }
 
@@ -630,5 +677,114 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
     flex-direction: column;
     align-items: center;
   }
+}
+
+.lens-type-toggle {
+  margin: 1rem 0;
+  justify-content: center;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.toggle-label:hover {
+  background-color: #e5e5e5;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.toggle-text {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.error-display {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  max-width: calc(100% - 2rem);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.prescription-message {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
