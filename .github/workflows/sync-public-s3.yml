@@ -23,7 +23,12 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: |
+          if [[ ${{ github.ref_name }} == *"stag"* ]] || [[ ${{ github.ref_name }} == *"staging"* ]]; then
+            npm run build:staging
+          else
+            npm run build
+          fi
 
       - name: List build output
         run: |
