@@ -47,7 +47,7 @@ defineExpose({
 }
 
 .lenshero-widget a {
-  color: #2196f3;
+  color: #000000;
   text-decoration: none;
 }
 
