@@ -16,11 +16,20 @@ export default defineConfig(({ command, mode }) => {
     VITE_CDN_URL: env.VITE_CDN_URL,
   };
 
-  // HTTPS config for local development
-  const httpsConfig = {
-    key: fs.readFileSync(path.resolve(__dirname, "certificates/key.pem")),
-    cert: fs.readFileSync(path.resolve(__dirname, "certificates/cert.pem")),
-  };
+  // HTTPS config for local development only
+  const serverConfig =
+    command === "serve"
+      ? {
+          https: {
+            key: fs.readFileSync(
+              path.resolve(__dirname, "certificates/key.pem")
+            ),
+            cert: fs.readFileSync(
+              path.resolve(__dirname, "certificates/cert.pem")
+            ),
+          },
+        }
+      : {};
 
   return {
     plugins: [vue()],
@@ -32,9 +41,7 @@ export default defineConfig(({ command, mode }) => {
         vue: "vue/dist/vue.esm-bundler.js",
       },
     },
-    server: {
-      https: httpsConfig,
-    },
+    server: serverConfig,
     build: {
       lib: {
         entry: resolve(__dirname, "src/main.js"),
