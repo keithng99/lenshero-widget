@@ -2,7 +2,7 @@
   font-family: inherit;
   line-height: 1.5;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.87);
+  color: #000000;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -57,7 +57,7 @@
 
 @media (prefers-color-scheme: light) {
   .lenshero-widget {
-    color: #213547;
+    color: #000000;
   }
 
   .lenshero-widget a:hover {
