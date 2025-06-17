@@ -43,6 +43,7 @@
           prescription. The price will adjust accordingly on the next page. If
           this is incorrect, you can toggle to update it.
         </div>
+        <PrescriptionValues v-if="ocrData" :ocr-data="ocrData" />
       </div>
     </div>
 
@@ -59,6 +60,7 @@
 import { ref } from "vue";
 import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
+import PrescriptionValues from "./PrescriptionValues.vue";
 
 const props = defineProps({
   productOrderKey: {
@@ -96,6 +98,7 @@ const IMAGE_PATHS = {
 
 const isUploadSelected = ref(false);
 const fileInput = ref(null);
+const ocrData = ref(null);
 
 function handleUploadClick() {
   isUploadSelected.value = true;
@@ -153,11 +156,12 @@ async function storeProductWithPrescription(formData) {
   }
 
   try {
-    const ocrData = data.data.ocrPrescription;
+    const prescriptionData = data.data.ocrPrescription;
+    ocrData.value = prescriptionData;
     // Only suggest progressive if we're very confident about the ADD values
     const hasClearProgressive =
-      (ocrData.leftEye.ADD1 && ocrData.rightEye.ADD1) ||
-      (ocrData.leftEye.ADD2 && ocrData.rightEye.ADD2);
+      (prescriptionData.leftEye.ADD1 && prescriptionData.rightEye.ADD1) ||
+      (prescriptionData.leftEye.ADD2 && prescriptionData.rightEye.ADD2);
 
     emit("update:isProgressive", hasClearProgressive);
   } catch (error) {

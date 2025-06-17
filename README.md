@@ -62,4 +62,24 @@ src/
 
 MIT
 
-aws cloudfront create-invalidation --distribution-id E16O7OKA9GSAIU --paths "/script.js" "/style.css"
+## Local Development with HTTPS
+
+To run the application with HTTPS locally:
+
+1. Generate SSL certificates by running:
+
+   ```bash
+   node scripts/generate-cert.js
+   ```
+
+   This will create a `certificates` directory with the necessary files.
+
+2. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Access the application at `https://localhost:5173`
+
+Note: You may need to accept the self-signed certificate warning in your browser the first time.
