@@ -158,6 +158,9 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
   if (data.status !== "success") {
     throw new Error(data.message);
   }
+
+  // store key in session storage
+  sessionStorage.setItem("lensheroOrderKey", productOrderKey);
   return true;
 }
 
