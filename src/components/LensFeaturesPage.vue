@@ -160,7 +160,7 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
   }
 
   // store key in session storage
-  sessionStorage.setItem("lensheroOrderKey", productOrderKey);
+  sessionStorage.setItem("lensHeroOrderKey", productOrderKey);
   return true;
 }
 
