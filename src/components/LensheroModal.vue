@@ -1,6 +1,10 @@
 <template>
   <div class="lenshero-modal-overlay" @click="closeModal">
-    <div class="lenshero-modal-content" @click.stop>
+    <div
+      class="lenshero-modal-content"
+      :class="{ 'no-padding': isLoading, 'no-scroll': isLoading }"
+      @click.stop
+    >
       <!-- Loading Overlay -->
       <LoadingOverlay
         :is-loading="isLoading"
@@ -179,6 +183,14 @@ function previousPage() {
   text-align: center;
   box-shadow: 0px 0px 15px var(--shadow-color);
   position: relative;
+}
+
+.lenshero-modal-content.no-padding {
+  padding: 0;
+}
+
+.lenshero-modal-content.no-scroll {
+  overflow: hidden;
 }
 
 .close-modal {

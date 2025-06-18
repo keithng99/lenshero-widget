@@ -23,19 +23,26 @@ defineProps({
 <style scoped>
 .lenshero-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 10 !important;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000 !important;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0;
+  border-radius: 8px;
 }
 
+/* Position the spinner in the center of the visible viewport */
 .spinner-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
+  z-index: 1001;
 }
 
 .loader {
