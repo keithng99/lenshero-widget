@@ -38,12 +38,17 @@
           class="prescription-preview"
         />
         <div v-if="hasUploadedFile" class="prescription-message">
-          We detected
-          {{ isProgressive ? "Progressive" : "Standard" }} lenses in your
-          prescription. The price will adjust accordingly on the next page. If
-          this is incorrect, you can toggle to update it.
+          {{
+            isProgressive
+              ? "Progressive lenses detected"
+              : "Standard lenses detected"
+          }}. Please verify the values below.
         </div>
-        <PrescriptionValues v-if="ocrData" :ocr-data="ocrData" />
+        <PrescriptionValues
+          v-if="ocrData"
+          :ocr-data="ocrData"
+          @update:values="handlePrescriptionUpdate"
+        />
       </div>
     </div>
 
@@ -79,6 +84,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  ocrData: {
+    type: Object,
+    default: null,
+  },
 });
 
 const emit = defineEmits([
@@ -87,6 +96,7 @@ const emit = defineEmits([
   "update:hasUploadedFile",
   "update:previewUrl",
   "update:isLoading",
+  "update:ocrData",
   "error",
 ]);
 
@@ -98,7 +108,6 @@ const IMAGE_PATHS = {
 
 const isUploadSelected = ref(false);
 const fileInput = ref(null);
-const ocrData = ref(null);
 
 function handleUploadClick() {
   isUploadSelected.value = true;
@@ -157,13 +166,20 @@ async function storeProductWithPrescription(formData) {
 
   try {
     const prescriptionData = data.data.ocrPrescription;
-    ocrData.value = prescriptionData;
-    // Only suggest progressive if we're very confident about the ADD values
-    const hasClearProgressive =
-      (prescriptionData.leftEye.ADD1 && prescriptionData.rightEye.ADD1) ||
-      (prescriptionData.leftEye.ADD2 && prescriptionData.rightEye.ADD2);
+    emit("update:ocrData", prescriptionData);
+    // Check for progressive lenses based on ADD values
+    const hasValidAdd = (add) => {
+      if (!add || add === "") return false;
+      const num = parseFloat(add);
+      return !isNaN(num) && num > 0;
+    };
+    const hasProgressive =
+      hasValidAdd(prescriptionData.leftEye.ADD1) ||
+      hasValidAdd(prescriptionData.leftEye.ADD2) ||
+      hasValidAdd(prescriptionData.rightEye.ADD1) ||
+      hasValidAdd(prescriptionData.rightEye.ADD2);
 
-    emit("update:isProgressive", hasClearProgressive);
+    emit("update:isProgressive", hasProgressive);
   } catch (error) {
     emit("error", "Error processing prescription data. Please try again.");
   }
@@ -182,6 +198,23 @@ async function getWidgetToken() {
   );
   const data = await response.json();
   return data.access_token;
+}
+
+function handlePrescriptionUpdate(updatedValues) {
+  emit("update:ocrData", updatedValues);
+  // Check for progressive lenses based on updated values
+  const hasValidAdd = (add) => {
+    if (!add || add === "") return false;
+    const num = parseFloat(add);
+    return !isNaN(num) && num > 0;
+  };
+  const hasProgressive =
+    hasValidAdd(updatedValues.leftEye.ADD1) ||
+    hasValidAdd(updatedValues.leftEye.ADD2) ||
+    hasValidAdd(updatedValues.rightEye.ADD1) ||
+    hasValidAdd(updatedValues.rightEye.ADD2);
+
+  emit("update:isProgressive", hasProgressive);
 }
 </script>
 

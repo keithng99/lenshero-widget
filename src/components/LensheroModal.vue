@@ -23,11 +23,13 @@
         :has-uploaded-file="hasUploadedFile"
         :is-progressive="isProgressive"
         :preview-url="previewUrl"
+        :ocr-data="ocrData"
         @next="nextPage"
         @update:is-progressive="isProgressive = $event"
         @update:has-uploaded-file="hasUploadedFile = $event"
         @update:preview-url="previewUrl = $event"
         @update:is-loading="isLoading = $event"
+        @update:ocr-data="ocrData = $event"
         @error="errorMessage = $event"
       />
 
@@ -38,8 +40,9 @@
         :has-uploaded-file="hasUploadedFile"
         :is-progressive="isProgressive"
         :pricing-options="pricingOptions"
+        :prescription-data="ocrData"
         @previous="previousPage"
-        @submit="closeModal"
+        @submit="handleSubmit"
         @update:is-progressive="isProgressive = $event"
         @error="errorMessage = $event"
       />
@@ -76,15 +79,26 @@ const isProgressive = ref(false);
 const errorMessage = ref(null);
 const pricingOptions = ref({});
 const previewUrl = ref(null);
+const ocrData = ref(null);
 
 // Fetch pricing when component is mounted
 onMounted(async () => {
   await fetchPricing();
 });
 
+function handleSubmit(formData) {
+  // Combine prescription data with form data
+  const submitData = {
+    ...formData,
+    manual_prescription: ocrData.value,
+  };
+  emit("close", submitData);
+}
+
 function closeModal() {
   isProgressive.value = false;
   errorMessage.value = null;
+  ocrData.value = null;
   emit("close");
 }
 

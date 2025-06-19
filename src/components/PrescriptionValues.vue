@@ -6,23 +6,77 @@
         <h4>Right Eye (OD)</h4>
         <div class="values-grid">
           <div class="value-item">
-            <span class="label">Sphere (SPH):</span>
-            <span class="value">{{ formatValue(ocrData.rightEye.SPH) }}</span>
+            <label class="label" for="right-sph">Sphere (SPH):</label>
+            <select
+              id="right-sph"
+              v-model="formData.rightEye.SPH"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option
+                v-for="value in sphereOptions"
+                :key="value"
+                :value="value"
+              >
+                {{ value }}
+              </option>
+            </select>
           </div>
           <div class="value-item">
-            <span class="label">Cylinder (CYL):</span>
-            <span class="value">{{ formatValue(ocrData.rightEye.CYL) }}</span>
+            <label class="label" for="right-cyl">Cylinder (CYL):</label>
+            <select
+              id="right-cyl"
+              v-model="formData.rightEye.CYL"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option
+                v-for="value in cylinderOptions"
+                :key="value"
+                :value="value"
+              >
+                {{ value }}
+              </option>
+            </select>
           </div>
           <div class="value-item">
-            <span class="label">Axis:</span>
-            <span class="value">{{ formatValue(ocrData.rightEye.AXIS) }}</span>
+            <label class="label" for="right-axis">Axis:</label>
+            <select
+              id="right-axis"
+              v-model="formData.rightEye.AXIS"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in axisOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
           </div>
           <div class="value-item">
-            <span class="label">Add:</span>
-            <span class="value">{{
-              formatValue(ocrData.rightEye.ADD1) ||
-              formatValue(ocrData.rightEye.ADD2)
-            }}</span>
+            <label class="label" for="right-add1">ADD1:</label>
+            <select
+              id="right-add1"
+              v-model="formData.rightEye.ADD1"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in addOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
+          </div>
+          <div class="value-item">
+            <label class="label" for="right-add2">ADD2:</label>
+            <select
+              id="right-add2"
+              v-model="formData.rightEye.ADD2"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in addOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -31,23 +85,77 @@
         <h4>Left Eye (OS)</h4>
         <div class="values-grid">
           <div class="value-item">
-            <span class="label">Sphere (SPH):</span>
-            <span class="value">{{ formatValue(ocrData.leftEye.SPH) }}</span>
+            <label class="label" for="left-sph">Sphere (SPH):</label>
+            <select
+              id="left-sph"
+              v-model="formData.leftEye.SPH"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option
+                v-for="value in sphereOptions"
+                :key="value"
+                :value="value"
+              >
+                {{ value }}
+              </option>
+            </select>
           </div>
           <div class="value-item">
-            <span class="label">Cylinder (CYL):</span>
-            <span class="value">{{ formatValue(ocrData.leftEye.CYL) }}</span>
+            <label class="label" for="left-cyl">Cylinder (CYL):</label>
+            <select
+              id="left-cyl"
+              v-model="formData.leftEye.CYL"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option
+                v-for="value in cylinderOptions"
+                :key="value"
+                :value="value"
+              >
+                {{ value }}
+              </option>
+            </select>
           </div>
           <div class="value-item">
-            <span class="label">Axis:</span>
-            <span class="value">{{ formatValue(ocrData.leftEye.AXIS) }}</span>
+            <label class="label" for="left-axis">Axis:</label>
+            <select
+              id="left-axis"
+              v-model="formData.leftEye.AXIS"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in axisOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
           </div>
           <div class="value-item">
-            <span class="label">Add:</span>
-            <span class="value">{{
-              formatValue(ocrData.leftEye.ADD1) ||
-              formatValue(ocrData.leftEye.ADD2)
-            }}</span>
+            <label class="label" for="left-add1">ADD1:</label>
+            <select
+              id="left-add1"
+              v-model="formData.leftEye.ADD1"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in addOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
+          </div>
+          <div class="value-item">
+            <label class="label" for="left-add2">ADD2:</label>
+            <select
+              id="left-add2"
+              v-model="formData.leftEye.ADD2"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in addOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -56,6 +164,8 @@
 </template>
 
 <script setup>
+import { ref, watch } from "vue";
+
 const props = defineProps({
   ocrData: {
     type: Object,
@@ -63,10 +173,74 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["update:values"]);
+
+// Generate options for dropdowns
+const sphereOptions = Array.from({ length: 41 }, (_, i) => {
+  const value = (i - 20) / 4;
+  return value.toFixed(2);
+});
+
+const cylinderOptions = Array.from({ length: 25 }, (_, i) => {
+  const value = (i - 12) / 4;
+  return value.toFixed(2);
+});
+
+const axisOptions = Array.from({ length: 181 }, (_, i) => i.toString());
+
+const addOptions = Array.from({ length: 13 }, (_, i) => {
+  const value = i / 4;
+  return value.toFixed(2);
+});
+
+// Initialize form data with OCR values
+const formData = ref({
+  rightEye: {
+    SPH: formatValue(props.ocrData.rightEye.SPH),
+    CYL: formatValue(props.ocrData.rightEye.CYL),
+    AXIS: formatAxisValue(props.ocrData.rightEye.AXIS),
+    ADD1: formatAddValue(props.ocrData.rightEye.ADD1),
+    ADD2: formatAddValue(props.ocrData.rightEye.ADD2),
+  },
+  leftEye: {
+    SPH: formatValue(props.ocrData.leftEye.SPH),
+    CYL: formatValue(props.ocrData.leftEye.CYL),
+    AXIS: formatAxisValue(props.ocrData.leftEye.AXIS),
+    ADD1: formatAddValue(props.ocrData.leftEye.ADD1),
+    ADD2: formatAddValue(props.ocrData.leftEye.ADD2),
+  },
+});
+
+// Helper functions to format values
 function formatValue(value) {
-  if (value === null || value === undefined) return "N/A";
-  return value;
+  if (!value || value === "") return "";
+  // Convert to number and format to 2 decimal places
+  const num = parseFloat(value);
+  return isNaN(num) ? "" : num.toFixed(2);
 }
+
+function formatAxisValue(value) {
+  if (!value || value === "") return "";
+  // Convert to integer
+  const num = parseInt(value);
+  return isNaN(num) ? "" : num.toString();
+}
+
+function formatAddValue(value) {
+  if (!value || value === "") return "";
+  // Convert to number and format to 2 decimal places if it's a valid number
+  const num = parseFloat(value);
+  return isNaN(num) || num === 0 ? "" : num.toFixed(2);
+}
+
+// Watch for changes in form data to auto-update parent
+watch(
+  formData,
+  (newValue) => {
+    emit("update:values", newValue);
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
@@ -103,24 +277,35 @@ function formatValue(value) {
 
 .values-grid {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .value-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 0;
 }
 
 .label {
   color: #666;
   font-size: 0.9rem;
+  margin-right: 1rem;
+  min-width: 100px;
 }
 
-.value {
-  font-weight: 500;
-  color: var(--text-color);
+.value-select {
+  padding: 0.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background-color: white;
+  width: 120px;
+}
+
+.value-select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(114, 125, 246, 0.2);
 }
 
 @media (max-width: 600px) {
@@ -131,6 +316,10 @@ function formatValue(value) {
 
   .eye-section {
     max-width: 100%;
+  }
+
+  .value-select {
+    width: 150px;
   }
 }
 </style>

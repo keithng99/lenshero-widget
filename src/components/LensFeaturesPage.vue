@@ -3,25 +3,6 @@
     <h1>Lens Features</h1>
     <p class="rx-subtitle">Choose the types of lens features you want</p>
 
-    <!-- Only show toggle if prescription is uploaded -->
-    <div v-if="hasUploadedFile" class="lens-type-toggle">
-      <label class="toggle-label">
-        <div class="toggle-switch">
-          <input
-            type="checkbox"
-            :checked="isProgressive"
-            @change="$emit('update:isProgressive', $event.target.checked)"
-          />
-          <span class="toggle-slider"></span>
-        </div>
-        <span class="toggle-text">
-          {{ isProgressive ? "Progressive" : "Standard" }} lenses price. Toggle
-          to see {{ isProgressive ? "Standard" : "Progressive" }}
-          lenses price.
-        </span>
-      </label>
-    </div>
-
     <div class="lenshero-pricing-container">
       <div
         v-for="(item, id) in pricingOptions"
@@ -33,7 +14,7 @@
         <input
           type="radio"
           :name="item.name"
-          :value="item.progressivePrice ? isProgressive : item.price"
+          :value="isProgressive ? item.progressivePrice : item.price"
           :checked="selectedOption === id"
           style="display: none"
         />
@@ -103,14 +84,13 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  prescriptionData: {
+    type: Object,
+    default: null,
+  },
 });
 
-const emit = defineEmits([
-  "previous",
-  "submit",
-  "update:isProgressive",
-  "error",
-]);
+const emit = defineEmits(["previous", "submit", "error", "update:isLoading"]);
 
 const selectedOption = ref("1");
 const termsAccepted = ref(false);
@@ -127,20 +107,31 @@ async function submitOrder() {
   if (!canSubmit.value) return;
 
   const selectedPricing = props.pricingOptions[selectedOption.value];
-  const variantPayload = {
-    price: selectedPricing.price,
-    name: selectedPricing.name,
-  };
 
   try {
-    await sendOrderConfirmation(props.productOrderKey, variantPayload);
-    emit("submit");
+    emit("update:isLoading", true);
+    const formData = {
+      add_on: {
+        price: selectedPricing.price,
+        name: selectedPricing.name,
+      },
+    };
+
+    // If we have prescription data, include it
+    if (props.prescriptionData) {
+      formData.manual_prescription = props.prescriptionData;
+    }
+
+    await sendOrderConfirmation(props.productOrderKey, formData);
+    emit("submit", formData);
   } catch (error) {
     emit("error", "Failed to submit order. Please try again.");
+  } finally {
+    emit("update:isLoading", false);
   }
 }
 
-async function sendOrderConfirmation(productOrderKey, addOn) {
+async function sendOrderConfirmation(productOrderKey, formData) {
   const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
   const token = await getWidgetToken();
   const response = await fetch(
@@ -151,7 +142,7 @@ async function sendOrderConfirmation(productOrderKey, addOn) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ add_on: addOn }),
+      body: JSON.stringify(formData),
     }
   );
   const data = await response.json();
@@ -314,75 +305,5 @@ async function getWidgetToken() {
 .tooltip-container:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
-}
-
-.lens-type-toggle {
-  margin: 1rem 0;
-  justify-content: center;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  background-color: #f5f5f5;
-  transition: all 0.3s ease;
-}
-
-.toggle-label:hover {
-  background-color: #e5e5e5;
-}
-
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 20px;
-}
-
-.toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .toggle-slider {
-  background-color: var(--primary-color);
-}
-
-input:checked + .toggle-slider:before {
-  transform: translateX(20px);
-}
-
-.toggle-text {
-  font-size: 0.9rem;
-  color: var(--text-color);
 }
 </style>
