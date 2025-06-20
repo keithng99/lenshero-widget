@@ -191,7 +191,7 @@ function previousPage() {
   padding: 20px;
   border-radius: 8px;
   width: 500px;
-  max-width: 90%;
+  max-width: 80%;
   max-height: 70vh;
   overflow-y: auto;
   text-align: center;

@@ -251,6 +251,7 @@ function handlePrescriptionUpdate(updatedValues) {
 .prescription-preview {
   max-width: 200px;
   margin-top: 10px;
+  display: inline;
 }
 
 .button-container {
