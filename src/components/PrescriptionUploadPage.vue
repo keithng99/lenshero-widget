@@ -72,10 +72,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  hasUploadedFile: {
-    type: Boolean,
-    default: false,
-  },
   isProgressive: {
     type: Boolean,
     default: false,
@@ -93,7 +89,7 @@ const props = defineProps({
 const emit = defineEmits([
   "next",
   "update:isProgressive",
-  "update:hasUploadedFile",
+  "update:file",
   "update:previewUrl",
   "update:isLoading",
   "update:ocrData",
@@ -138,7 +134,7 @@ async function handleFileChange(event) {
     try {
       emit("update:isLoading", true);
       await storeProductWithPrescription(formData);
-      emit("update:hasUploadedFile", true);
+      emit("update:file", file);
     } catch (error) {
       emit("error", "Failed to upload prescription. Please try again.");
     } finally {

@@ -26,7 +26,7 @@
         :ocr-data="ocrData"
         @next="nextPage"
         @update:is-progressive="isProgressive = $event"
-        @update:has-uploaded-file="hasUploadedFile = $event"
+        @update:file="uploadedFile = $event"
         @update:preview-url="previewUrl = $event"
         @update:is-loading="isLoading = $event"
         @update:ocr-data="ocrData = $event"
@@ -41,6 +41,7 @@
         :is-progressive="isProgressive"
         :pricing-options="pricingOptions"
         :prescription-data="ocrData"
+        :uploaded-file="uploadedFile"
         @previous="previousPage"
         @submit="handleSubmit"
         @update:is-progressive="isProgressive = $event"
@@ -80,6 +81,7 @@ const errorMessage = ref(null);
 const pricingOptions = ref({});
 const previewUrl = ref(null);
 const ocrData = ref(null);
+const uploadedFile = ref(null);
 
 // Fetch pricing when component is mounted
 onMounted(async () => {

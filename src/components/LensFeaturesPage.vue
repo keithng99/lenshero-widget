@@ -72,10 +72,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  hasUploadedFile: {
-    type: Boolean,
-    required: true,
-  },
   isProgressive: {
     type: Boolean,
     required: true,
@@ -88,6 +84,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  uploadedFile: {
+    type: Object,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["previous", "submit", "error", "update:isLoading"]);
@@ -96,7 +96,7 @@ const selectedOption = ref("1");
 const termsAccepted = ref(false);
 
 const canSubmit = computed(() => {
-  return termsAccepted.value && props.hasUploadedFile;
+  return termsAccepted.value && props.uploadedFile;
 });
 
 function selectOption(id) {
@@ -110,9 +110,14 @@ async function submitOrder() {
 
   try {
     emit("update:isLoading", true);
+
+    const price = props.isProgressive
+      ? selectedPricing.progressivePrice
+      : selectedPricing.price;
+
     const formData = {
       add_on: {
-        price: selectedPricing.price,
+        price: price,
         name: selectedPricing.name,
       },
     };
@@ -124,6 +129,16 @@ async function submitOrder() {
 
     await sendOrderConfirmation(props.productOrderKey, formData);
     emit("submit", formData);
+
+    // Dispatch a custom event for external listeners
+    const eventDetail = {
+      productOrderKey: props.productOrderKey,
+      image: props.uploadedFile,
+      ...formData,
+    };
+    window.dispatchEvent(
+      new CustomEvent("lenshero:modal-submitted", { detail: eventDetail })
+    );
   } catch (error) {
     emit("error", "Failed to submit order. Please try again.");
   } finally {

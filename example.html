@@ -13,5 +13,14 @@
   <body>
     <!-- Automatic initialization -->
     <div id="lenshero-widget"></div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+
+    <script>
+      window.addEventListener("lenshero:modal-submitted", (event) => {
+        console.log("Custom event `lenshero:modal-submitted` caught!");
+        console.log("Event detail:", event.detail);
+      });
+    </script>
   </body>
 </html>
