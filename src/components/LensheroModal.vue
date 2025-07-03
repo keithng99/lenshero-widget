@@ -192,13 +192,14 @@ function previousPage() {
   background-color: var(--background-color);
   padding: 20px;
   border-radius: 8px;
-  width: 500px;
-  max-width: 80%;
-  max-height: 70vh;
+  min-width: 30vw;
+  max-width: 90vw;
+  max-height: 90vh;
   overflow-y: auto;
   text-align: center;
   box-shadow: 0px 0px 15px var(--shadow-color);
   position: relative;
+  box-sizing: border-box;
 }
 
 .lenshero-modal-content.no-padding {
@@ -221,10 +222,10 @@ function previousPage() {
 
 @media (max-width: 600px) {
   .lenshero-modal-content {
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    width: 98vw;
+    max-width: 98vw;
+    padding: 10px;
+    font-size: 0.95rem;
   }
 }
 </style>

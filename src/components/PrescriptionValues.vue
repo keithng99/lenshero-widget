@@ -250,6 +250,8 @@ watch(
   background-color: #f8f9fa;
   border-radius: 8px;
   text-align: left;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .prescription-values h3 {
@@ -262,6 +264,7 @@ watch(
   display: flex;
   gap: 2rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .eye-section {
@@ -318,8 +321,13 @@ watch(
     max-width: 100%;
   }
 
+  .prescription-values {
+    padding: 0.5rem;
+  }
+
   .value-select {
-    width: 150px;
+    width: 100%;
+    min-width: 0;
   }
 }
 </style>
