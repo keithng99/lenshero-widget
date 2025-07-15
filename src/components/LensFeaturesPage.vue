@@ -306,16 +306,19 @@ async function getWidgetToken() {
   background-color: #333;
   color: #fff;
   text-align: center;
-  padding: 5px 10px;
+  padding: 8px 12px;
   border-radius: 5px;
   position: absolute;
   bottom: 120%;
   left: 50%;
   transform: translateX(-50%);
-  white-space: nowrap;
+  white-space: normal;
   font-size: 12px;
   opacity: 0;
   transition: opacity 0.3s;
+  max-width: 250px;
+  width: max-content;
+  word-wrap: break-word;
 }
 
 .tooltip-container:hover .tooltip-text {
