@@ -78,6 +78,19 @@
               </option>
             </select>
           </div>
+          <div class="value-item">
+            <label class="label" for="right-pd">PD:</label>
+            <select
+              id="right-pd"
+              v-model="formData.rightEye.PD"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in pdOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -157,6 +170,19 @@
               </option>
             </select>
           </div>
+          <div class="value-item">
+            <label class="label" for="left-pd">PD:</label>
+            <select
+              id="left-pd"
+              v-model="formData.leftEye.PD"
+              class="value-select"
+            >
+              <option value="">Select...</option>
+              <option v-for="value in pdOptions" :key="value" :value="value">
+                {{ value }}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -193,6 +219,10 @@ const addOptions = Array.from({ length: 13 }, (_, i) => {
   return value.toFixed(2);
 });
 
+const pdOptions = Array.from({ length: 71 }, (_, i) => {
+  const value = 30 + i * 0.5;
+  return value.toFixed(1);
+});
 // Initialize form data with OCR values
 const formData = ref({
   rightEye: {
@@ -201,6 +231,7 @@ const formData = ref({
     AXIS: formatAxisValue(props.ocrData.rightEye.AXIS),
     ADD1: formatAddValue(props.ocrData.rightEye.ADD1),
     ADD2: formatAddValue(props.ocrData.rightEye.ADD2),
+    PD: formatPdValue(props.ocrData.rightEye.PD),
   },
   leftEye: {
     SPH: formatValue(props.ocrData.leftEye.SPH),
@@ -208,6 +239,7 @@ const formData = ref({
     AXIS: formatAxisValue(props.ocrData.leftEye.AXIS),
     ADD1: formatAddValue(props.ocrData.leftEye.ADD1),
     ADD2: formatAddValue(props.ocrData.leftEye.ADD2),
+    PD: formatPdValue(props.ocrData.leftEye.PD),
   },
 });
 
@@ -231,6 +263,13 @@ function formatAddValue(value) {
   // Convert to number and format to 2 decimal places if it's a valid number
   const num = parseFloat(value);
   return isNaN(num) || num === 0 ? "" : num.toFixed(2);
+}
+
+function formatPdValue(value) {
+  if (!value || value === "") return "";
+  // Convert to number and format to 1 decimal place to match pdOptions
+  const num = parseFloat(value);
+  return isNaN(num) ? "" : num.toFixed(1);
 }
 
 // Watch for changes in form data to auto-update parent
