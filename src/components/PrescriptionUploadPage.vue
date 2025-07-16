@@ -27,7 +27,7 @@
         <input
           type="file"
           ref="fileInput"
-          accept="image/*"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
           style="display: none"
           @change="handleFileChange"
         />
@@ -66,6 +66,7 @@ import { ref } from "vue";
 import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
 import PrescriptionValues from "./PrescriptionValues.vue";
+import heic2any from "heic2any";
 
 const props = defineProps({
   productOrderKey: {
@@ -113,12 +114,71 @@ function handleUploadClick() {
 async function handleFileChange(event) {
   const file = event.target.files[0];
   if (file) {
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+      emit(
+        "error",
+        "File size must be less than 20MB. Please choose a smaller image."
+      );
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+    // Check file extension as fallback for HEIC images
+    // Because the browser doesn't recognize the type of the file
+    const fileExtension = file.name.toLowerCase().split(".").pop();
+    const allowedExtensions = ["heic", "heif"];
+
+    // Check if file type is allowed OR if extension is allowed (for HEIC files that might have empty type)
+    const isValidType = allowedTypes.includes(file.type);
+    const isValidExtension = allowedExtensions.includes(fileExtension);
+
+    if (!isValidType && !isValidExtension) {
+      emit("error", "Please upload a JPEG, PNG, WebP, or HEIC image file.");
+      return;
+    }
+
+    // Convert HEIC to JPEG if needed
+    let processedFile = file;
+    if (
+      file.type === "image/heic" ||
+      file.type === "image/heif" ||
+      fileExtension === "heic" ||
+      fileExtension === "heif"
+    ) {
+      emit("update:isLoading", true);
+      try {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.8,
+        });
+
+        // Create a new file with JPEG extension
+        processedFile = new File(
+          [convertedBlob],
+          file.name.replace(/\.(heic|heif)$/i, ".jpg"),
+          { type: "image/jpeg" }
+        );
+      } catch (error) {
+        console.error("HEIC conversion failed:", error);
+        emit("update:isLoading", false);
+        emit(
+          "error",
+          "Failed to convert HEIC image. Please try converting it to JPEG first."
+        );
+        return;
+      }
+    }
+
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
       emit("update:previewUrl", e.target.result);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(processedFile);
 
     // Upload file
     const formData = new FormData();
@@ -129,12 +189,12 @@ async function handleFileChange(event) {
         store_id: window.location.origin || "unknown-store",
       })
     );
-    formData.append("prescription_image", file);
+    formData.append("prescription_image", processedFile);
 
     try {
       emit("update:isLoading", true);
       await storeProductWithPrescription(formData);
-      emit("update:file", file);
+      emit("update:file", processedFile);
     } catch (error) {
       emit("error", "Failed to upload prescription. Please try again.");
     } finally {
