@@ -116,7 +116,7 @@ async function submitOrder() {
       : selectedPricing.price;
 
     const formData = {
-      add_on: {
+      addOn: {
         price: price,
         name: selectedPricing.name,
       },
@@ -124,7 +124,7 @@ async function submitOrder() {
 
     // If we have prescription data, include it
     if (props.prescriptionData) {
-      formData.manual_prescription = props.prescriptionData;
+      formData.manualPrescription = props.prescriptionData;
     }
 
     await sendOrderConfirmation(props.productOrderKey, formData);

@@ -172,7 +172,7 @@ async function handleFileChange(event) {
         return;
       }
     }
-
+    emit("update:isLoading", true);
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -180,16 +180,28 @@ async function handleFileChange(event) {
     };
     reader.readAsDataURL(processedFile);
 
-    // Upload file
+    // Get presigned URL for direct S3 upload
+    const presignedUrlData = await getPresignedUrl(processedFile);
+
+    // Upload file directly to S3 using presigned URL
+    const uploadResponse = await fetch(presignedUrlData.url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": processedFile.type,
+      },
+      body: processedFile,
+    });
+
+    if (!uploadResponse.ok) {
+      emit("error", `S3 upload failed: ${uploadResponse.status}`);
+      return;
+    }
+
+    // Send metadata to backend for processing
     const formData = new FormData();
-    formData.append(
-      "product_data",
-      JSON.stringify({
-        lenshero_key: props.productOrderKey,
-        store_id: window.location.origin || "unknown-store",
-      })
-    );
-    formData.append("prescription_image", processedFile);
+    formData.append("lensHeroKey", props.productOrderKey);
+    formData.append("storeId", window.location.origin || "unknown-store");
+    formData.append("s3Key", presignedUrlData.s3Key);
 
     try {
       emit("update:isLoading", true);
@@ -203,6 +215,39 @@ async function handleFileChange(event) {
   }
 }
 
+async function getPresignedUrl(file) {
+  const token = await getWidgetToken();
+
+  const requestBody = {
+    fileName: file.name,
+    fileType: file.type,
+  };
+
+  const response = await fetch(
+    `${API_ENDPOINT}/lens-plugin/create-presigned-url`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Presigned URL error:", errorData);
+    throw new Error(`Failed to get presigned URL: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return {
+    url: data.presignedUrl,
+    s3Key: data.s3Key,
+  };
+}
+
 async function storeProductWithPrescription(formData) {
   const token = await getWidgetToken();
   const response = await fetch(
@@ -211,10 +256,22 @@ async function storeProductWithPrescription(formData) {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-      body: formData,
+      body: JSON.stringify({
+        lensHeroKey: formData.get("lensHeroKey"),
+        storeId: formData.get("storeId"),
+        s3Key: formData.get("s3Key"),
+      }),
     }
   );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Processing error:", errorData);
+    throw new Error(`Processing failed: ${response.status}`);
+  }
+
   const data = await response.json();
   if (data.status !== "success") {
     throw new Error(data.message);
