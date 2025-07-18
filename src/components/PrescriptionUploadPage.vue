@@ -38,11 +38,7 @@
           class="prescription-preview"
         />
         <div v-if="hasUploadedFile" class="prescription-message">
-          {{
-            isProgressive
-              ? "Progressive lenses detected"
-              : "Standard lenses detected"
-          }}. Please verify the values below.
+          Prescription detected. Please verify the values below.
         </div>
         <PrescriptionValues
           v-if="ocrData"
@@ -94,6 +90,7 @@ const emit = defineEmits([
   "update:previewUrl",
   "update:isLoading",
   "update:ocrData",
+  "update:hasUploadedFile",
   "error",
 ]);
 
@@ -207,6 +204,7 @@ async function handleFileChange(event) {
       emit("update:isLoading", true);
       await storeProductWithPrescription(formData);
       emit("update:file", processedFile);
+      emit("update:hasUploadedFile", true);
     } catch (error) {
       emit("error", "Failed to upload prescription. Please try again.");
     } finally {
@@ -280,19 +278,6 @@ async function storeProductWithPrescription(formData) {
   try {
     const prescriptionData = data.data.ocrPrescription;
     emit("update:ocrData", prescriptionData);
-    // Check for progressive lenses based on ADD values
-    const hasValidAdd = (add) => {
-      if (!add || add === "") return false;
-      const num = parseFloat(add);
-      return !isNaN(num) && num > 0;
-    };
-    const hasProgressive =
-      hasValidAdd(prescriptionData.leftEye.ADD1) ||
-      hasValidAdd(prescriptionData.leftEye.ADD2) ||
-      hasValidAdd(prescriptionData.rightEye.ADD1) ||
-      hasValidAdd(prescriptionData.rightEye.ADD2);
-
-    emit("update:isProgressive", hasProgressive);
   } catch (error) {
     emit("error", "Error processing prescription data. Please try again.");
   }
@@ -315,19 +300,6 @@ async function getWidgetToken() {
 
 function handlePrescriptionUpdate(updatedValues) {
   emit("update:ocrData", updatedValues);
-  // Check for progressive lenses based on updated values
-  const hasValidAdd = (add) => {
-    if (!add || add === "") return false;
-    const num = parseFloat(add);
-    return !isNaN(num) && num > 0;
-  };
-  const hasProgressive =
-    hasValidAdd(updatedValues.leftEye.ADD1) ||
-    hasValidAdd(updatedValues.leftEye.ADD2) ||
-    hasValidAdd(updatedValues.rightEye.ADD1) ||
-    hasValidAdd(updatedValues.rightEye.ADD2);
-
-  emit("update:isProgressive", hasProgressive);
 }
 </script>
 

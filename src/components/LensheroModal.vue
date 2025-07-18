@@ -30,12 +30,23 @@
         @update:preview-url="previewUrl = $event"
         @update:is-loading="isLoading = $event"
         @update:ocr-data="ocrData = $event"
+        @update:has-uploaded-file="hasUploadedFile = $event"
         @error="errorMessage = $event"
       />
 
-      <!-- Page 2: Lens Features -->
-      <LensFeaturesPage
+      <!-- Page 2: Lens Type Selection -->
+      <LensTypePage
         v-if="currentPage === 2"
+        :is-progressive="isProgressive"
+        :has-uploaded-file="hasUploadedFile"
+        @next="nextPage"
+        @previous="previousPage"
+        @update:is-progressive="isProgressive = $event"
+      />
+
+      <!-- Page 3: Lens Features -->
+      <LensFeaturesPage
+        v-if="currentPage === 3"
         :product-order-key="productOrderKey"
         :has-uploaded-file="hasUploadedFile"
         :is-progressive="isProgressive"
@@ -56,6 +67,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "./ErrorMessage.vue";
 import LoadingOverlay from "./LoadingOverlay.vue";
 import PrescriptionUploadPage from "./PrescriptionUploadPage.vue";
+import LensTypePage from "./LensTypePage.vue";
 import LensFeaturesPage from "./LensFeaturesPage.vue";
 
 const props = defineProps({
@@ -164,12 +176,16 @@ async function getWidgetToken() {
 function nextPage() {
   if (currentPage.value === 1) {
     currentPage.value = 2;
+  } else if (currentPage.value === 2) {
+    currentPage.value = 3;
   }
 }
 
 function previousPage() {
   if (currentPage.value === 2) {
     currentPage.value = 1;
+  } else if (currentPage.value === 3) {
+    currentPage.value = 2;
   }
 }
 </script>
