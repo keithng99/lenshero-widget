@@ -249,6 +249,17 @@ async function getWidgetToken() {
   font-style: italic;
 }
 
+.terms-notice a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.terms-notice a:hover {
+  text-decoration: none;
+  color: var(--primary-hover);
+}
+
 .button-container {
   margin-top: 20px;
   display: flex;

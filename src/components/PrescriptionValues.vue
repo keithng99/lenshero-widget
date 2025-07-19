@@ -190,7 +190,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, nextTick } from "vue";
 
 const props = defineProps({
   ocrData: {
@@ -200,6 +200,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:values"]);
+
+// Flag to prevent recursive updates
+const isUpdatingFromOcr = ref(false);
 
 // Generate options for dropdowns
 const sphereOptions = Array.from({ length: 41 }, (_, i) => {
@@ -276,9 +279,48 @@ function formatPdValue(value) {
 watch(
   formData,
   (newValue) => {
-    emit("update:values", newValue);
+    // Only emit if we're not updating from OCR data
+    if (!isUpdatingFromOcr.value) {
+      emit("update:values", newValue);
+    }
   },
   { deep: true }
+);
+
+// Watch for changes in OCR data to update form data
+watch(
+  () => props.ocrData,
+  (newOcrData, oldOcrData) => {
+    if (
+      newOcrData &&
+      JSON.stringify(newOcrData) !== JSON.stringify(oldOcrData)
+    ) {
+      isUpdatingFromOcr.value = true;
+      formData.value = {
+        rightEye: {
+          SPH: formatValue(newOcrData.rightEye.SPH),
+          CYL: formatValue(newOcrData.rightEye.CYL),
+          AXIS: formatAxisValue(newOcrData.rightEye.AXIS),
+          ADD1: formatAddValue(newOcrData.rightEye.ADD1),
+          ADD2: formatAddValue(newOcrData.rightEye.ADD2),
+          PD: formatPdValue(newOcrData.rightEye.PD),
+        },
+        leftEye: {
+          SPH: formatValue(newOcrData.leftEye.SPH),
+          CYL: formatValue(newOcrData.leftEye.CYL),
+          AXIS: formatAxisValue(newOcrData.leftEye.AXIS),
+          ADD1: formatAddValue(newOcrData.leftEye.ADD1),
+          ADD2: formatAddValue(newOcrData.leftEye.ADD2),
+          PD: formatPdValue(newOcrData.leftEye.PD),
+        },
+      };
+      // Reset the flag after the next tick
+      nextTick(() => {
+        isUpdatingFromOcr.value = false;
+      });
+    }
+  },
+  { immediate: true, deep: true }
 );
 </script>
 

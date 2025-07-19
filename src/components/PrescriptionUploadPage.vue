@@ -7,45 +7,49 @@
 
     <!-- Prescription Section -->
     <div class="lenshero-prescription-section">
-      <div class="lenshero-upload-section">
-        <div
-          class="lenshero-upload-option"
-          :class="{ selected: isUploadSelected }"
-          @click="handleUploadClick"
-        >
-          <img
-            :src="IMAGE_PATHS.UPLOAD_ICON"
-            alt="Upload Icon"
-            width="40"
-            height="40"
+      <div class="lenshero-upload-container">
+        <div class="lenshero-upload-section">
+          <div
+            class="lenshero-upload-option"
+            :class="{ selected: isUploadSelected }"
+            @click="handleUploadClick"
+          >
+            <img
+              :src="IMAGE_PATHS.UPLOAD_ICON"
+              alt="Upload Icon"
+              width="40"
+              height="40"
+            />
+            <p>Upload an image of your prescription</p>
+          </div>
+        </div>
+
+        <div class="lenshero-upload-input-section">
+          <input
+            type="file"
+            ref="fileInput"
+            accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
+            style="display: none"
+            @change="handleFileChange"
           />
-          <p>Upload an image of your prescription</p>
+          <img
+            v-if="previewUrl"
+            :src="previewUrl"
+            alt="Prescription Preview"
+            class="prescription-preview"
+          />
         </div>
       </div>
 
-      <div class="lenshero-upload-input-section">
-        <input
-          type="file"
-          ref="fileInput"
-          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
-          style="display: none"
-          @change="handleFileChange"
-        />
-        <img
-          v-if="previewUrl"
-          :src="previewUrl"
-          alt="Prescription Preview"
-          class="prescription-preview"
-        />
-        <div v-if="hasUploadedFile" class="prescription-message">
-          Prescription detected. Please verify the values below.
-        </div>
-        <PrescriptionValues
-          v-if="ocrData"
-          :ocr-data="ocrData"
-          @update:values="handlePrescriptionUpdate"
-        />
+      <div v-if="hasUploadedFile" class="prescription-message">
+        Prescription detected. Please verify the values below.
       </div>
+
+      <PrescriptionValues
+        v-if="ocrData"
+        :ocr-data="ocrData"
+        @update:values="handlePrescriptionUpdate"
+      />
     </div>
 
     <div class="button-container">
@@ -210,6 +214,9 @@ async function handleFileChange(event) {
     } finally {
       emit("update:isLoading", false);
     }
+
+    // Clear the file input value so the same file can be selected again
+    event.target.value = "";
   }
 }
 
@@ -328,11 +335,20 @@ function handlePrescriptionUpdate(updatedValues) {
 </script>
 
 <style scoped>
-.lenshero-upload-section {
+.lenshero-upload-container {
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
   gap: 20px;
   margin: 20px 0;
+  justify-content: center;
+}
+
+.lenshero-upload-section {
+  flex-shrink: 0;
+}
+
+.lenshero-upload-input-section {
+  flex-shrink: 0;
 }
 
 .lenshero-upload-option {
