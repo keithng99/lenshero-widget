@@ -67,14 +67,12 @@
       <button class="button" @click="handleNext">Next</button>
     </div>
 
-    <SupportSection />
     <PoweredBySection />
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
 
 const props = defineProps({

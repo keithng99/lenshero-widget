@@ -57,14 +57,12 @@
       </div>
     </div>
 
-    <SupportSection />
     <PoweredBySection />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
-import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
 
 const props = defineProps({

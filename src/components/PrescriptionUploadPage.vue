@@ -52,14 +52,12 @@
       <button class="button" @click="$emit('next')">Next</button>
     </div>
 
-    <SupportSection />
     <PoweredBySection />
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import SupportSection from "./SupportSection.vue";
 import PoweredBySection from "./PoweredBySection.vue";
 import PrescriptionValues from "./PrescriptionValues.vue";
 import heic2any from "heic2any";
