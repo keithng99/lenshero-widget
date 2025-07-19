@@ -24,7 +24,7 @@
           </div>
         </div>
 
-        <div class="lenshero-upload-input-section">
+        <div class="lenshero-upload-preview-section">
           <input
             type="file"
             ref="fileInput"
@@ -337,18 +337,24 @@ function handlePrescriptionUpdate(updatedValues) {
 <style scoped>
 .lenshero-upload-container {
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  align-items: center;
   margin: 20px 0;
   justify-content: center;
+  transform: translateX(5px);
 }
 
 .lenshero-upload-section {
   flex-shrink: 0;
 }
 
-.lenshero-upload-input-section {
+.lenshero-upload-preview-section {
   flex-shrink: 0;
+  margin-left: 10px;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lenshero-upload-option {
@@ -374,9 +380,10 @@ function handlePrescriptionUpdate(updatedValues) {
 }
 
 .prescription-preview {
-  max-width: 200px;
-  margin-top: 10px;
-  display: inline;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .button-container {
