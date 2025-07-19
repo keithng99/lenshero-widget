@@ -190,6 +190,7 @@ async function handleFileChange(event) {
     });
 
     if (!uploadResponse.ok) {
+      emit("update:isLoading", false);
       emit("error", `S3 upload failed: ${uploadResponse.status}`);
       return;
     }
