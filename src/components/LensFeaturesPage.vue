@@ -120,6 +120,7 @@ async function submitOrder() {
         price: price,
         name: selectedPricing.name,
       },
+      lensType: props.isProgressive ? "progressive" : "standard",
     };
 
     // If we have prescription data, include it
@@ -133,8 +134,6 @@ async function submitOrder() {
     // Dispatch a custom event for external listeners
     const eventDetail = {
       productOrderKey: props.productOrderKey,
-      // TODO: uncomment this when we agree with the client for GDPR compliance
-      // image: props.uploadedFile,
       ...formData,
     };
     window.dispatchEvent(

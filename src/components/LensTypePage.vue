@@ -24,7 +24,6 @@
         />
         <div class="lenshero-lens-type-header">
           <h4>Standard Lenses</h4>
-          <div class="lenshero-lens-type-icon">👓</div>
         </div>
         <div class="lenshero-lens-type-description">
           <p>Single vision lenses for distance or reading</p>
@@ -50,7 +49,7 @@
         />
         <div class="lenshero-lens-type-header">
           <h4>Progressive Lenses</h4>
-          <div class="lenshero-lens-type-icon">🔍</div>
+          <div class="lenshero-lens-type-price">+500 SEK</div>
         </div>
         <div class="lenshero-lens-type-description">
           <p>Multifocal lenses for all distances</p>
@@ -147,8 +146,14 @@ function handleNext() {
   color: var(--text-color);
 }
 
-.lenshero-lens-type-icon {
-  font-size: 2rem;
+.lenshero-lens-type-price {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .lenshero-lens-type-description {
@@ -215,8 +220,9 @@ function handleNext() {
     font-size: 1.1rem;
   }
 
-  .lenshero-lens-type-icon {
-    font-size: 1.5rem;
+  .lenshero-lens-type-price {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
   }
 }
 </style>
