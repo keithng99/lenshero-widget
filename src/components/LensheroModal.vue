@@ -31,6 +31,7 @@
         @update:is-loading="isLoading = $event"
         @update:ocr-data="ocrData = $event"
         @update:has-uploaded-file="hasUploadedFile = $event"
+        @update:has-progressive-options="hasProgressiveOptions = $event"
         @error="errorMessage = $event"
       />
 
@@ -89,6 +90,7 @@ const currentPage = ref(1);
 const isLoading = ref(false);
 const hasUploadedFile = ref(false);
 const isProgressive = ref(false);
+const hasProgressiveOptions = ref(false);
 const errorMessage = ref(null);
 const pricingOptions = ref({});
 const previewUrl = ref(null);
@@ -111,6 +113,7 @@ function handleSubmit(formData) {
 
 function closeModal() {
   isProgressive.value = false;
+  hasProgressiveOptions.value = false;
   errorMessage.value = null;
   ocrData.value = null;
   emit("close");
@@ -175,7 +178,12 @@ async function getWidgetToken() {
 
 function nextPage() {
   if (currentPage.value === 1) {
-    currentPage.value = 2;
+    // If no progressive options detected, skip to page 3 (Lens Features)
+    if (!hasProgressiveOptions.value) {
+      currentPage.value = 3;
+    } else {
+      currentPage.value = 2;
+    }
   } else if (currentPage.value === 2) {
     currentPage.value = 3;
   }
@@ -185,7 +193,12 @@ function previousPage() {
   if (currentPage.value === 2) {
     currentPage.value = 1;
   } else if (currentPage.value === 3) {
-    currentPage.value = 2;
+    // If no progressive options, go back to page 1, otherwise page 2
+    if (!hasProgressiveOptions.value) {
+      currentPage.value = 1;
+    } else {
+      currentPage.value = 2;
+    }
   }
 }
 </script>

@@ -35,13 +35,9 @@
       </div>
     </div>
 
-    <div class="terms-container">
-      <input type="checkbox" id="terms-checkbox" v-model="termsAccepted" />
-      <label for="terms-checkbox">
-        I agree to the
-        <a href="/terms-and-conditions" target="_blank">terms and conditions</a
-        >.
-      </label>
+    <div class="terms-notice">
+      By submitting, I confirm that I've read and understand the
+      <a href="/terms-and-conditions" target="_blank">Terms and Conditions</a>.
     </div>
 
     <div class="button-container">
@@ -51,8 +47,7 @@
           Submit
         </button>
         <span class="tooltip-text">
-          Ensure to upload a clear prescription image and check our terms and
-          conditions before you submit
+          Ensure to upload a clear prescription image before you submit
         </span>
       </div>
     </div>
@@ -91,10 +86,13 @@ const props = defineProps({
 const emit = defineEmits(["previous", "submit", "error", "update:isLoading"]);
 
 const selectedOption = ref("1");
-const termsAccepted = ref(false);
 
 const canSubmit = computed(() => {
-  return termsAccepted.value && props.uploadedFile;
+  // Enable submit if prescription image is uploaded OR prescription data exists
+  return (
+    props.uploadedFile ||
+    (props.prescriptionData && Object.keys(props.prescriptionData).length > 0)
+  );
 });
 
 function selectOption(id) {
@@ -245,25 +243,10 @@ async function getWidgetToken() {
   color: var(--text-color);
 }
 
-.terms-container {
-  display: flex;
-  align-items: center;
-  font-size: 1em;
-  margin: 1em 0;
-  justify-content: center;
-}
-
-.terms-container input[type="checkbox"] {
-  margin-right: 0.5em;
-}
-
-.terms-container a {
-  color: var(--primary-color);
-  text-decoration: underline;
-}
-
-.terms-container a:hover {
-  text-decoration: none;
+.terms-notice {
+  text-align: center;
+  margin: 1rem 0;
+  font-style: italic;
 }
 
 .button-container {

@@ -89,6 +89,7 @@ const emit = defineEmits([
   "update:isLoading",
   "update:ocrData",
   "update:hasUploadedFile",
+  "update:hasProgressiveOptions",
   "error",
 ]);
 
@@ -245,6 +246,22 @@ async function getPresignedUrl(file) {
   };
 }
 
+// Helper function to check if prescription has progressive lens options
+function checkProgressiveOptions(prescriptionData) {
+  const hasValidAdd = (add) => {
+    if (!add || add === "") return false;
+    const num = parseFloat(add);
+    return !isNaN(num) && num > 0;
+  };
+
+  return (
+    hasValidAdd(prescriptionData.leftEye.ADD1) ||
+    hasValidAdd(prescriptionData.leftEye.ADD2) ||
+    hasValidAdd(prescriptionData.rightEye.ADD1) ||
+    hasValidAdd(prescriptionData.rightEye.ADD2)
+  );
+}
+
 async function storeProductWithPrescription(formData) {
   const token = await getWidgetToken();
   const response = await fetch(
@@ -277,6 +294,10 @@ async function storeProductWithPrescription(formData) {
   try {
     const prescriptionData = data.data.ocrPrescription;
     emit("update:ocrData", prescriptionData);
+
+    // Check for progressive lenses based on ADD values
+    const hasProgressive = checkProgressiveOptions(prescriptionData);
+    emit("update:hasProgressiveOptions", hasProgressive);
   } catch (error) {
     emit("error", "Error processing prescription data. Please try again.");
   }
@@ -299,6 +320,10 @@ async function getWidgetToken() {
 
 function handlePrescriptionUpdate(updatedValues) {
   emit("update:ocrData", updatedValues);
+
+  // Check for progressive lenses based on updated values
+  const hasProgressive = checkProgressiveOptions(updatedValues);
+  emit("update:hasProgressiveOptions", hasProgressive);
 }
 </script>
 
