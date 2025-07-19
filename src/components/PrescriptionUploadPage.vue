@@ -24,22 +24,22 @@
           </div>
         </div>
 
-        <div class="lenshero-upload-preview-section">
-          <input
-            type="file"
-            ref="fileInput"
-            accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
-            style="display: none"
-            @change="handleFileChange"
-          />
+        <div v-if="previewUrl" class="lenshero-upload-preview-section">
           <img
-            v-if="previewUrl"
             :src="previewUrl"
             alt="Prescription Preview"
             class="prescription-preview"
           />
         </div>
       </div>
+
+      <input
+        type="file"
+        ref="fileInput"
+        accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
+        style="display: none"
+        @change="handleFileChange"
+      />
 
       <div v-if="hasUploadedFile" class="prescription-message">
         Prescription detected. Please verify the values below.
@@ -340,7 +340,6 @@ function handlePrescriptionUpdate(updatedValues) {
   align-items: center;
   margin: 20px 0;
   justify-content: center;
-  transform: translateX(5px);
 }
 
 .lenshero-upload-section {
