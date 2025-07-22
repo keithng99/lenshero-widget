@@ -14,11 +14,11 @@
             >
               <option value="">Select...</option>
               <option
-                v-for="value in sphereOptions"
-                :key="value"
-                :value="value"
+                v-for="option in sphereOptions"
+                :key="option.value"
+                :value="option.value"
               >
-                {{ value }}
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -31,11 +31,11 @@
             >
               <option value="">Select...</option>
               <option
-                v-for="value in cylinderOptions"
-                :key="value"
-                :value="value"
+                v-for="option in cylinderOptions"
+                :key="option.value"
+                :value="option.value"
               >
-                {{ value }}
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -60,8 +60,12 @@
               class="value-select"
             >
               <option value="">Select...</option>
-              <option v-for="value in addOptions" :key="value" :value="value">
-                {{ value }}
+              <option
+                v-for="option in addOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -73,8 +77,12 @@
               class="value-select"
             >
               <option value="">Select...</option>
-              <option v-for="value in addOptions" :key="value" :value="value">
-                {{ value }}
+              <option
+                v-for="option in addOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -106,11 +114,11 @@
             >
               <option value="">Select...</option>
               <option
-                v-for="value in sphereOptions"
-                :key="value"
-                :value="value"
+                v-for="option in sphereOptions"
+                :key="option.value"
+                :value="option.value"
               >
-                {{ value }}
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -123,11 +131,11 @@
             >
               <option value="">Select...</option>
               <option
-                v-for="value in cylinderOptions"
-                :key="value"
-                :value="value"
+                v-for="option in cylinderOptions"
+                :key="option.value"
+                :value="option.value"
               >
-                {{ value }}
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -152,8 +160,12 @@
               class="value-select"
             >
               <option value="">Select...</option>
-              <option v-for="value in addOptions" :key="value" :value="value">
-                {{ value }}
+              <option
+                v-for="option in addOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -165,8 +177,12 @@
               class="value-select"
             >
               <option value="">Select...</option>
-              <option v-for="value in addOptions" :key="value" :value="value">
-                {{ value }}
+              <option
+                v-for="option in addOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -206,25 +222,37 @@ const isUpdatingFromOcr = ref(false);
 
 // Generate options for dropdowns
 const sphereOptions = Array.from({ length: 41 }, (_, i) => {
-  const value = (i - 20) / 4;
-  return value.toFixed(2);
+  const value = ((i - 20) / 4).toFixed(2);
+  const num = parseFloat(value);
+  return {
+    value,
+    label: num > 0 ? `+${value}` : value,
+  };
 });
 
 const cylinderOptions = Array.from({ length: 25 }, (_, i) => {
-  const value = (i - 12) / 4;
-  return value.toFixed(2);
+  const value = ((i - 12) / 4).toFixed(2);
+  const num = parseFloat(value);
+  return {
+    value,
+    label: num > 0 ? `+${value}` : value,
+  };
 });
 
 const axisOptions = Array.from({ length: 181 }, (_, i) => i.toString());
 
 const addOptions = Array.from({ length: 13 }, (_, i) => {
-  const value = i / 4;
-  return value.toFixed(2);
+  const value = (i / 4).toFixed(2);
+  const num = parseFloat(value);
+  return {
+    value,
+    label: num > 0 ? `+${value}` : value,
+  };
 });
 
 const pdOptions = Array.from({ length: 71 }, (_, i) => {
-  const value = 30 + i * 0.5;
-  return value.toFixed(1);
+  const value = (30 + i * 0.5).toFixed(1);
+  return value;
 });
 // Initialize form data with OCR values
 const formData = ref({
