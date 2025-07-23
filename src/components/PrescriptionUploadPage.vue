@@ -30,6 +30,9 @@
             alt="Prescription Preview"
             class="prescription-preview"
           />
+          <div v-if="uploadedFileName" class="prescription-filename">
+            {{ uploadedFileName }}
+          </div>
         </div>
       </div>
 
@@ -105,6 +108,7 @@ const IMAGE_PATHS = {
 
 const isUploadSelected = ref(false);
 const fileInput = ref(null);
+const uploadedFileName = ref("");
 
 function handleUploadClick() {
   isUploadSelected.value = true;
@@ -114,6 +118,7 @@ function handleUploadClick() {
 async function handleFileChange(event) {
   const file = event.target.files[0];
   if (file) {
+    uploadedFileName.value = file.name;
     const maxSize = 20 * 1024 * 1024;
     if (file.size > maxSize) {
       emit(
@@ -162,6 +167,7 @@ async function handleFileChange(event) {
           file.name.replace(/\.(heic|heif)$/i, ".jpg"),
           { type: "image/jpeg" }
         );
+        uploadedFileName.value = processedFile.name;
       } catch (error) {
         console.error("HEIC conversion failed:", error);
         emit("update:isLoading", false);
@@ -352,6 +358,7 @@ function handlePrescriptionUpdate(updatedValues) {
   width: 150px;
   height: 150px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -418,5 +425,13 @@ function handlePrescriptionUpdate(updatedValues) {
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.prescription-filename {
+  margin-top: 0.5rem;
+  text-align: center;
+  color: #555;
+  font-size: 0.95rem;
+  word-break: break-all;
 }
 </style>
