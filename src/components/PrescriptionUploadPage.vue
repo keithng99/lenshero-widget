@@ -68,6 +68,7 @@ import { ref } from "vue";
 import PoweredBySection from "./PoweredBySection.vue";
 import PrescriptionValues from "./PrescriptionValues.vue";
 import heic2any from "heic2any";
+import { getWidgetToken, getStoreDomain } from "../utils/index.js";
 
 const props = defineProps({
   productOrderKey: {
@@ -207,7 +208,7 @@ async function handleFileChange(event) {
     // Send metadata to backend for processing
     const formData = new FormData();
     formData.append("lensHeroKey", props.productOrderKey);
-    formData.append("storeId", window.location.origin || "unknown-store");
+    formData.append("storeId", getStoreDomain() || "unknown-store");
     formData.append("s3Key", presignedUrlData.s3Key);
 
     try {
@@ -232,6 +233,7 @@ async function getPresignedUrl(file) {
   const requestBody = {
     fileName: file.name,
     fileType: file.type,
+    path: getStoreDomain(),
   };
 
   const response = await fetch(
@@ -314,21 +316,6 @@ async function storeProductWithPrescription(formData) {
   } catch (error) {
     emit("error", "Error processing prescription data. Please try again.");
   }
-}
-
-async function getWidgetToken() {
-  const timestamp = Math.floor(Date.now() / 1000);
-  const response = await fetch(
-    `${API_ENDPOINT}/authentication/lenshero-widget-token?timestamp=${timestamp}`,
-    {
-      method: "GET",
-      headers: {
-        Origin: window.location.origin,
-      },
-    }
-  );
-  const data = await response.json();
-  return data.access_token;
 }
 
 function handlePrescriptionUpdate(updatedValues) {

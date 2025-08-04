@@ -70,6 +70,11 @@ import LoadingOverlay from "./LoadingOverlay.vue";
 import PrescriptionUploadPage from "./PrescriptionUploadPage.vue";
 import LensTypePage from "./LensTypePage.vue";
 import LensFeaturesPage from "./LensFeaturesPage.vue";
+import {
+  getWidgetToken,
+  getCachedPricing,
+  cachePricing,
+} from "../utils/index.js";
 
 const props = defineProps({
   productOrderKey: {
@@ -82,8 +87,6 @@ const emit = defineEmits(["close"]);
 
 // Constants
 const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
-const PRICING_CACHE_KEY = "lensheroPricingCache";
-const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 // State
 const currentPage = ref(1);
@@ -122,14 +125,10 @@ function closeModal() {
 async function fetchPricing() {
   try {
     // Check cache first
-    const cachedData = sessionStorage.getItem(PRICING_CACHE_KEY);
+    const cachedData = getCachedPricing();
     if (cachedData) {
-      const { data, timestamp } = JSON.parse(cachedData);
-      // Check if cache is still valid
-      if (Date.now() - timestamp < CACHE_EXPIRY && data) {
-        pricingOptions.value = data;
-        return;
-      }
+      pricingOptions.value = cachedData;
+      return;
     }
 
     // If no cache or expired, fetch from API
@@ -143,37 +142,15 @@ async function fetchPricing() {
     pricingOptions.value = data.addOns;
 
     // Update cache
-    sessionStorage.setItem(
-      PRICING_CACHE_KEY,
-      JSON.stringify({
-        data: data.addOns,
-        timestamp: Date.now(),
-      })
-    );
+    cachePricing(data.addOns);
   } catch (error) {
     errorMessage.value = "Failed to fetch pricing. Please refresh the page.";
     // If API fails, try to use cached data even if expired
-    const cachedData = sessionStorage.getItem(PRICING_CACHE_KEY);
+    const cachedData = getCachedPricing();
     if (cachedData) {
-      const { data } = JSON.parse(cachedData);
-      pricingOptions.value = data;
+      pricingOptions.value = cachedData;
     }
   }
-}
-
-async function getWidgetToken() {
-  const timestamp = Math.floor(Date.now() / 1000);
-  const response = await fetch(
-    `${API_ENDPOINT}/authentication/lenshero-widget-token?timestamp=${timestamp}`,
-    {
-      method: "GET",
-      headers: {
-        Origin: window.location.origin,
-      },
-    }
-  );
-  const data = await response.json();
-  return data.access_token;
 }
 
 function nextPage() {

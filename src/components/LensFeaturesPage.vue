@@ -59,6 +59,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import PoweredBySection from "./PoweredBySection.vue";
+import { getWidgetToken, setLensHeroOrderKey } from "../utils/index.js";
 
 const props = defineProps({
   productOrderKey: {
@@ -162,24 +163,8 @@ async function sendOrderConfirmation(productOrderKey, formData) {
   }
 
   // store key in session storage
-  sessionStorage.setItem("lensHeroOrderKey", productOrderKey);
+  setLensHeroOrderKey(productOrderKey);
   return true;
-}
-
-async function getWidgetToken() {
-  const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
-  const timestamp = Math.floor(Date.now() / 1000);
-  const response = await fetch(
-    `${API_ENDPOINT}/authentication/lenshero-widget-token?timestamp=${timestamp}`,
-    {
-      method: "GET",
-      headers: {
-        Origin: window.location.origin,
-      },
-    }
-  );
-  const data = await response.json();
-  return data.access_token;
 }
 </script>
 
