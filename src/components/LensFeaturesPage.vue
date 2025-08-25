@@ -120,10 +120,10 @@ async function submitOrder() {
       lensType: props.isProgressive ? "progressive" : "standard",
     };
 
-    // If we have prescription data, include it
-    if (props.prescriptionData) {
-      formData.manualPrescription = props.prescriptionData;
-    }
+    // // If we have prescription data, include it
+    // if (props.prescriptionData) {
+    //   formData.manualPrescription = props.prescriptionData;
+    // }
 
     await sendOrderConfirmation(props.productOrderKey, formData);
     emit("submit", formData);
