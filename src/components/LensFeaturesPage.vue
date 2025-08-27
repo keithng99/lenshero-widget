@@ -130,12 +130,13 @@ async function submitOrder() {
 
     // Dispatch a custom event for external listeners
     const eventDetail = {
-      productOrderKey: props.productOrderKey,
+      lensHeroOrderKey: props.productOrderKey,
       ...formData,
     };
     window.dispatchEvent(
       new CustomEvent("lenshero:modal-submitted", { detail: eventDetail })
     );
+    console.log("Dispatching lenshero:modal-submitted: ", eventDetail);
   } catch (error) {
     emit("error", "Failed to submit order. Please try again.");
   } finally {
