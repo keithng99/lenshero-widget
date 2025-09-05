@@ -9,50 +9,28 @@
     <div class="lenshero-prescription-section">
       <div class="lenshero-upload-container">
         <div class="lenshero-upload-section">
-          <div
-            class="lenshero-upload-option"
-            :class="{ selected: isUploadSelected }"
-            @click="handleUploadClick"
-          >
-            <img
-              :src="IMAGE_PATHS.UPLOAD_ICON"
-              alt="Upload Icon"
-              width="40"
-              height="40"
-            />
+          <div class="lenshero-upload-option" :class="{ selected: isUploadSelected }" @click="handleUploadClick">
+            <img :src="IMAGE_PATHS.UPLOAD_ICON" alt="Upload Icon" width="40" height="40" />
             <p>Upload an image of your prescription</p>
           </div>
         </div>
 
         <div v-if="previewUrl" class="lenshero-upload-preview-section">
-          <img
-            :src="previewUrl"
-            alt="Prescription Preview"
-            class="prescription-preview"
-          />
+          <img :src="previewUrl" alt="Prescription Preview" class="prescription-preview" />
           <div v-if="uploadedFileName" class="prescription-filename">
             {{ uploadedFileName }}
           </div>
         </div>
       </div>
 
-      <input
-        type="file"
-        ref="fileInput"
-        accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
-        style="display: none"
-        @change="handleFileChange"
-      />
+      <input type="file" ref="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
+        style="display: none" @change="handleFileChange" />
 
       <div v-if="hasUploadedFile" class="prescription-message">
         Prescription detected. Please verify the values below.
       </div>
 
-      <PrescriptionValues
-        v-if="ocrData"
-        :ocr-data="ocrData"
-        @update:values="handlePrescriptionUpdate"
-      />
+      <PrescriptionValues v-if="ocrData" :ocr-data="ocrData" @update:values="handlePrescriptionUpdate" />
     </div>
 
     <div class="button-container">
@@ -191,17 +169,23 @@ async function handleFileChange(event) {
     const presignedUrlData = await getPresignedUrl(processedFile);
 
     // Upload file directly to S3 using presigned URL
-    const uploadResponse = await fetch(presignedUrlData.url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": processedFile.type,
-      },
-      body: processedFile,
-    });
+    try {
+      const uploadResponse = await fetch(presignedUrlData.url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": processedFile.type,
+        },
+        body: processedFile,
+      });
 
-    if (!uploadResponse.ok) {
+      if (!uploadResponse.ok) {
+        emit("update:isLoading", false);
+        emit("error", `S3 upload failed: ${uploadResponse.status}`);
+        return;
+      }
+    } catch (error) {
       emit("update:isLoading", false);
-      emit("error", `S3 upload failed: ${uploadResponse.status}`);
+      emit("error", "Failed to upload prescription. Please try again.");
       return;
     }
 
