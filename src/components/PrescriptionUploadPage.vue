@@ -53,6 +53,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  hasUploadedFile: {
+    type: Boolean,
+    default: false,
+  },
   isProgressive: {
     type: Boolean,
     default: false,
