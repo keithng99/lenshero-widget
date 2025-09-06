@@ -26,8 +26,11 @@ jobs:
         run: |
           if [[ ${{ github.ref_name }} == *"stag"* ]] || [[ ${{ github.ref_name }} == *"staging"* ]]; then
             npm run build:staging
-          else
+          elif [[ ${{ github.ref_name }} == "main" ]]; then
             npm run build
+          else
+            echo "Error: Invalid branch"
+            exit 1
           fi
 
       - name: List build output
