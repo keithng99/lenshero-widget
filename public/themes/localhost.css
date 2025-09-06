@@ -1,0 +1,12 @@
+/* Localhost Theme - Red */
+.lenshero-widget.theme-localhost {
+  --primary-hover: #c82333;
+  --border-color: #ced4da;
+  --background-color: #ffffff;
+}
+
+.lenshero-widget.theme-localhost .prescription-values h3 {
+  font-size: 1.1rem;
+  font-style: italic;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}

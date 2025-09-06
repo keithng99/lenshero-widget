@@ -10,11 +10,18 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import LensheroModal from "./LensheroModal.vue";
+import { initializeTheme } from "../utils/index.js";
 
 const showModal = ref(false);
 const productOrderKey = ref("");
+
+// Initialize theme when component mounts
+onMounted(async () => {
+  // Apply theme (handles preloading internally)
+  await initializeTheme();
+});
 
 function generateUUID() {
   return crypto.randomUUID();

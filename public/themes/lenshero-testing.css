@@ -1,0 +1,18 @@
+/* Store 2 Theme - Green */
+.lenshero-widget.theme-store2 {
+  --primary-color: #28a745;
+  --primary-hover: #1e7e34;
+  --text-color: #2c3e50;
+  --border-color: #dee2e6;
+  --background-color: #f8f9fa;
+  --overlay-color: rgba(40, 167, 69, 0.6);
+  --shadow-color: rgba(40, 167, 69, 0.2);
+  --font-family: Helvetica, sans-serif;
+  --border-radius: 4px;
+}
+
+.lenshero-widget.theme-store2 .prescription-values h3 {
+  font-size: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}

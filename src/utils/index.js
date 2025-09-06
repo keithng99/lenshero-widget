@@ -15,3 +15,10 @@ export {
   STORAGE_KEYS,
 } from "./storage.js";
 export { getStoreDomain } from "./misc.js";
+export {
+  applyStoreTheme,
+  resetTheme,
+  getCurrentTheme,
+  initializeTheme,
+  preloadTheme,
+} from "./themeManager.js";
