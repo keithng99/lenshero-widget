@@ -26,9 +26,10 @@
       <input type="file" ref="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
         style="display: none" @change="handleFileChange" />
 
-      <div v-if="hasUploadedFile" class="prescription-message">
+      <!-- FIXME: Disable prescription message for now -->
+      <!-- <div v-if="hasUploadedFile" class="prescription-message">
         Prescription detected. Please verify the values below.
-      </div>
+      </div> -->
 
       <PrescriptionValues v-if="ocrData" :ocr-data="ocrData" @update:values="handlePrescriptionUpdate" />
     </div>
@@ -193,24 +194,23 @@ async function handleFileChange(event) {
       return;
     }
 
-    // Send metadata to backend for processing
-    const formData = new FormData();
-    formData.append("lensHeroKey", props.productOrderKey);
-    formData.append("storeId", getStoreDomain() || "unknown-store");
-    formData.append("s3Key", presignedUrlData.s3Key);
-
     try {
       emit("update:isLoading", true);
       await createLensheroProduct(props.productOrderKey, getStoreDomain() || "unknown-store")
       await updateProductPrescriptionImage(props.productOrderKey, presignedUrlData.s3Key)
-      const ocrPrescription = await extractPrescription(presignedUrlData.s3Key)
-      await storeProductWithPrescription(props.productOrderKey, ocrPrescription);
       emit("update:file", processedFile);
       emit("update:hasUploadedFile", true);
     } catch (error) {
       emit("error", "Failed to upload prescription. Please try again.");
     } finally {
       emit("update:isLoading", false);
+    }
+
+    try {
+      const ocrPrescription = await extractPrescription(presignedUrlData.s3Key)
+      await storeProductWithPrescription(props.productOrderKey, ocrPrescription);
+    } catch (error) {
+      console.error("Failed to extract prescription", error);
     }
 
     // Clear the file input value so the same file can be selected again

@@ -8,7 +8,7 @@
       <!-- Loading Overlay -->
       <LoadingOverlay
         :is-loading="isLoading"
-        message="Analyzing your prescription values"
+        message="Uploading your prescription"
       />
 
       <!-- Error Display -->
@@ -35,15 +35,16 @@
         @error="errorMessage = $event"
       />
 
+      <!-- FIXME: Disable page 2 for now-->
       <!-- Page 2: Lens Type Selection -->
-      <LensTypePage
+      <!-- <LensTypePage
         v-if="currentPage === 2"
         :is-progressive="isProgressive"
         :has-uploaded-file="hasUploadedFile"
         @next="nextPage"
         @previous="previousPage"
         @update:is-progressive="isProgressive = $event"
-      />
+      /> -->
 
       <!-- Page 3: Lens Features -->
       <LensFeaturesPage
@@ -68,7 +69,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "./ErrorMessage.vue";
 import LoadingOverlay from "./LoadingOverlay.vue";
 import PrescriptionUploadPage from "./PrescriptionUploadPage.vue";
-import LensTypePage from "./LensTypePage.vue";
+// import LensTypePage from "./LensTypePage.vue";
 import LensFeaturesPage from "./LensFeaturesPage.vue";
 import {
   getWidgetToken,

@@ -12,6 +12,12 @@ export async function getWidgetToken() {
   const response = await fetch(
     `${API_ENDPOINT}/authentication/lenshero-widget-token?timestamp=${timestamp}`
   );
+
+  if (!response.ok) {
+    throw new Error(`Failed to get widget token: ${response.status}`);
+  }
+
   const data = await response.json();
+
   return data.access_token;
 }
