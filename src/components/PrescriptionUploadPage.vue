@@ -201,7 +201,10 @@ async function handleFileChange(event) {
 
     try {
       emit("update:isLoading", true);
-      await storeProductWithPrescription(formData);
+      await createLensheroProduct(props.productOrderKey, getStoreDomain() || "unknown-store")
+      await updateProductPrescriptionImage(props.productOrderKey, presignedUrlData.s3Key)
+      const ocrPrescription = await extractPrescription(presignedUrlData.s3Key)
+      await storeProductWithPrescription(props.productOrderKey, ocrPrescription);
       emit("update:file", processedFile);
       emit("update:hasUploadedFile", true);
     } catch (error) {
@@ -265,7 +268,66 @@ function checkProgressiveOptions(prescriptionData) {
   );
 }
 
-async function storeProductWithPrescription(formData) {
+async function createLensheroProduct(lensHeroKey, storeId) {
+  const token = await getWidgetToken();
+  const response = await fetch(
+    `${API_ENDPOINT}/lens-plugin/create-lenshero-product?lenshero_key=${lensHeroKey}&store_id=${storeId}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Processing error:", errorData);
+    throw new Error(`Processing failed: ${response.status}`);
+  }
+}
+
+async function updateProductPrescriptionImage(lensHeroKey, s3Key) {
+  const token = await getWidgetToken();
+  const response = await fetch(
+    `${API_ENDPOINT}/lens-plugin/update-product-prescription-image?lenshero_key=${lensHeroKey}&s3_key=${s3Key}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Processing error:", errorData);
+    throw new Error(`Processing failed: ${response.status}`);
+  }
+}
+
+async function extractPrescription(s3Key) {
+  const token = await getWidgetToken();
+  const response = await fetch(
+    `${API_ENDPOINT}/lens-plugin/extract-prescription-from-s3?s3_key=${s3Key}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Processing error:", errorData);
+    throw new Error(`Processing failed: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+async function storeProductWithPrescription(lensHeroKey, ocrPrescription) {
   const token = await getWidgetToken();
   const response = await fetch(
     `${API_ENDPOINT}/lens-plugin/store-product-with-prescription`,
@@ -276,9 +338,8 @@ async function storeProductWithPrescription(formData) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        lensHeroKey: formData.get("lensHeroKey"),
-        storeId: formData.get("storeId"),
-        s3Key: formData.get("s3Key"),
+        lensHeroKey: lensHeroKey,
+        ocrPrescription: ocrPrescription,
       }),
     }
   );
