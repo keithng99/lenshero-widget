@@ -206,12 +206,13 @@ async function handleFileChange(event) {
       emit("update:isLoading", false);
     }
 
-    try {
-      const ocrPrescription = await extractPrescription(presignedUrlData.s3Key)
-      await storeProductWithPrescription(props.productOrderKey, ocrPrescription);
-    } catch (error) {
-      console.error("Failed to extract prescription", error);
-    }
+    // FIXME: Uncomment this when we have a way to extract prescription from the image
+    // try {
+    //   const ocrPrescription = await extractPrescription(presignedUrlData.s3Key)
+    //   await storeProductWithPrescription(props.productOrderKey, ocrPrescription);
+    // } catch (error) {
+    //   console.error("Failed to extract prescription", error);
+    // }
 
     // Clear the file input value so the same file can be selected again
     event.target.value = "";
