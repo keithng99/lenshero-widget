@@ -405,7 +405,7 @@ function handlePrescriptionUpdate(updatedValues) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--border-color);
   padding: 10px;
   padding-top: 20px;
   border-radius: 8px;
@@ -418,8 +418,8 @@ function handlePrescriptionUpdate(updatedValues) {
 .lenshero-upload-option:hover,
 .lenshero-upload-option.selected {
   border-color: var(--primary-color);
-  background-color: #f5f7ff;
-  box-shadow: 0 0 5px rgba(114, 125, 246, 0.5);
+  background-color: var(--background-color);
+  box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 .prescription-preview {

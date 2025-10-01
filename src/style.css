@@ -8,8 +8,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary-color: #727df6;
-  --primary-hover: #5a67d8;
+  --primary-color: #000;
+  --primary-hover: #000;
   --text-color: #000;
   --border-color: #ccc;
   --background-color: #fff;
@@ -36,7 +36,7 @@
 }
 
 .lenshero-widget button:hover {
-  border-color: #646cff;
+  border-color: #000;
 }
 
 .lenshero-widget button:focus,
@@ -61,7 +61,7 @@
   }
 
   .lenshero-widget a:hover {
-    color: #747bff;
+    color: #000;
   }
 
   .lenshero-widget button {

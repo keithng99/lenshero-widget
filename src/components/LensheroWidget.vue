@@ -1,6 +1,14 @@
 <template>
   <div class="lenshero-widget">
-    <a href="#" @click.prevent="openModal">Receptglas</a>
+    <div class="widget-content">
+      <h2 class="widget-heading">Receptglas</h2>
+      <p class="widget-description">
+        Lägg till receptglas genom att ladda upp ditt synrecept och välja glas
+      </p>
+      <button class="widget-button" @click="openModal">
+        Ladda upp
+      </button>
+    </div>
     <LensheroModal
       v-if="showModal"
       :product-order-key="productOrderKey"
@@ -44,14 +52,53 @@ defineExpose({
 <style scoped>
 .lenshero-widget {
   display: inline-block;
+  background: white;
+  padding: 0;
+  font-family: serif;
 }
 
-.lenshero-widget a {
+.widget-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px;
+}
+
+.widget-heading {
+  font-size: 2rem;
+  font-weight: bold;
   color: #000000;
-  text-decoration: none;
+  margin: 0;
+  font-family: serif;
+  line-height: 1.2;
 }
 
-.lenshero-widget a:hover {
-  text-decoration: underline;
+.widget-description {
+  font-size: 1rem;
+  color: #000000;
+  margin: 0;
+  font-family: serif;
+  line-height: 1.4;
+}
+
+.widget-button {
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-family: serif;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+}
+
+.widget-button:hover {
+  background-color: #333333;
+}
+
+.widget-button:active {
+  background-color: #666666;
 }
 </style>

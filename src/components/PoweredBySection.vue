@@ -1,6 +1,6 @@
 <template>
   <div class="lenshero-powered-by">
-    <p>Powered by <a href="https://lenshero.io" target="_blank">LensHero</a></p>
+    <p>Powered by LensHero</p>
   </div>
 </template>
 
