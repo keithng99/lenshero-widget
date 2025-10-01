@@ -61,7 +61,6 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 400px;
   padding: 12px 0 12px 0;
 }
 
