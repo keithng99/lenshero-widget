@@ -1,7 +1,7 @@
 <template>
   <div class="lenshero-widget">
     <div class="widget-content">
-      <p class="widget-heading">Receptglas</p>
+      <span class="widget-heading">Receptglas</span>
       <p class="widget-description">
         Lägg till receptglas genom att ladda upp ditt synrecept och välja glas
       </p>
@@ -66,7 +66,7 @@ defineExpose({
 }
 
 .widget-heading {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #000000;
   margin: 0;
   font-family: inherit;
