@@ -2,7 +2,7 @@
   <div class="lenshero-page">
     <h1>Prescription</h1>
     <p class="lenshero-modal-description">
-      Upload an image of your prescription.
+      Upload an image or PDF of your prescription.
     </p>
 
     <!-- Prescription Section -->
@@ -11,20 +11,25 @@
         <div class="lenshero-upload-section">
           <div class="lenshero-upload-option" :class="{ selected: isUploadSelected }" @click="handleUploadClick">
             <img :src="IMAGE_PATHS.UPLOAD_ICON" alt="Upload Icon" width="40" height="40" />
-            <p>Upload an image of your prescription</p>
+            <p>Upload an image or PDF of your prescription</p>
           </div>
         </div>
 
         <div v-if="previewUrl" class="lenshero-upload-preview-section">
-          <img :src="previewUrl" alt="Prescription Preview" class="prescription-preview" />
+          <img v-if="!isPdfFile" :src="previewUrl" alt="Prescription Preview" class="prescription-preview" />
+          <div v-else class="pdf-preview">
+            <div class="pdf-icon">📄</div>
+            <div class="pdf-label">PDF Document</div>
+          </div>
           <div v-if="uploadedFileName" class="prescription-filename">
             {{ uploadedFileName }}
           </div>
         </div>
       </div>
 
-      <input type="file" ref="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
-        style="display: none" @change="handleFileChange" />
+      <input type="file" ref="fileInput"
+        accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,application/pdf" style="display: none"
+        @change="handleFileChange" />
 
       <!-- FIXME: Disable prescription message for now -->
       <!-- <div v-if="hasUploadedFile" class="prescription-message">
@@ -93,6 +98,7 @@ const IMAGE_PATHS = {
 const isUploadSelected = ref(false);
 const fileInput = ref(null);
 const uploadedFileName = ref("");
+const isPdfFile = ref(false);
 
 function handleUploadClick() {
   isUploadSelected.value = true;
@@ -107,25 +113,29 @@ async function handleFileChange(event) {
     if (file.size > maxSize) {
       emit(
         "error",
-        "File size must be less than 20MB. Please choose a smaller image."
+        "File size must be less than 20MB. Please choose a smaller file."
       );
       return;
     }
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    // Check if file is PDF
+    const popfileExtension = file.name.toLowerCase().split(".").pop();
+    isPdfFile.value = file.type === "application/pdf" || popfileExtension === "pdf";
 
-    // Check file extension as fallback for HEIC images
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
+
+    // Check file extension as fallback for HEIC images and PDF files
     // Because the browser doesn't recognize the type of the file
     const fileExtension = file.name.toLowerCase().split(".").pop();
-    const allowedExtensions = ["heic", "heif"];
+    const allowedExtensions = ["heic", "heif", "pdf"];
 
-    // Check if file type is allowed OR if extension is allowed (for HEIC files that might have empty type)
+    // Check if file type is allowed OR if extension is allowed (for HEIC files and PDFs that might have empty type)
     const isValidType = allowedTypes.includes(file.type);
     const isValidExtension = allowedExtensions.includes(fileExtension);
 
     if (!isValidType && !isValidExtension) {
-      emit("error", "Please upload a JPEG, PNG, WebP, or HEIC image file.");
+      emit("error", "Please upload a JPEG, PNG, WebP, HEIC image file, or PDF file.");
       return;
     }
 
@@ -164,11 +174,17 @@ async function handleFileChange(event) {
     }
     emit("update:isLoading", true);
     // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      emit("update:previewUrl", e.target.result);
-    };
-    reader.readAsDataURL(processedFile);
+    if (isPdfFile.value) {
+      // For PDF files, set a placeholder URL to trigger the preview display
+      emit("update:previewUrl", "data:application/pdf;base64,");
+    } else {
+      // For image files, create data URL preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        emit("update:previewUrl", e.target.result);
+      };
+      reader.readAsDataURL(processedFile);
+    }
 
     // Get presigned URL for direct S3 upload
     const presignedUrlData = await getPresignedUrl(processedFile);
@@ -470,5 +486,28 @@ function handlePrescriptionUpdate(updatedValues) {
   color: #555;
   font-size: 0.95rem;
   word-break: break-all;
+}
+
+.pdf-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 2px dashed #ccc;
+}
+
+.pdf-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.pdf-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
 }
 </style>
