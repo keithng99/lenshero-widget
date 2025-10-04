@@ -1,12 +1,12 @@
 <template>
   <div class="lenshero-widget">
     <div class="widget-content">
-      <span class="widget-heading">Receptglas</span>
+      <span class="widget-heading">{{ t('widget.heading') }}</span>
       <p class="widget-description">
-        Lägg till receptglas genom att ladda upp ditt synrecept och välja glas
+        {{ t('widget.description') }}
       </p>
       <button class="widget-button" @click="openModal">
-        Ladda upp
+        {{ t('widget.button') }}
       </button>
     </div>
     <LensheroModal
@@ -18,11 +18,17 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import LensheroModal from "./LensheroModal.vue";
+import { initI18n, t } from "../utils/i18n.js";
 
 const showModal = ref(false);
 const productOrderKey = ref("");
+
+// Initialize i18n system on component mount
+onMounted(async () => {
+  await initI18n();
+});
 
 function generateUUID() {
   return crypto.randomUUID();

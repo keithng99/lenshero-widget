@@ -1,8 +1,8 @@
 <template>
   <div class="lenshero-page">
-    <h1>Prescription</h1>
+    <h1>{{ t('upload.title') }}</h1>
     <p class="lenshero-modal-description">
-      Upload an image or PDF of your prescription.
+      {{ t('upload.description') }}
     </p>
 
     <!-- Prescription Section -->
@@ -11,7 +11,7 @@
         <div class="lenshero-upload-section">
           <div class="lenshero-upload-option" :class="{ selected: isUploadSelected }" @click="handleUploadClick">
             <img :src="IMAGE_PATHS.UPLOAD_ICON" alt="Upload Icon" width="40" height="40" />
-            <p>Upload an image or PDF of your prescription</p>
+            <p>{{ t('upload.drag_drop') }}</p>
           </div>
         </div>
 
@@ -19,7 +19,7 @@
           <img v-if="!isPdfFile" :src="previewUrl" alt="Prescription Preview" class="prescription-preview" />
           <div v-else class="pdf-preview">
             <div class="pdf-icon">📄</div>
-            <div class="pdf-label">PDF Document</div>
+            <div class="pdf-label">{{ t('upload.pdf_document') }}</div>
           </div>
           <div v-if="uploadedFileName" class="prescription-filename">
             {{ uploadedFileName }}
@@ -40,7 +40,7 @@
     </div>
 
     <div class="button-container">
-      <button class="button" @click="$emit('next')">Next</button>
+      <button class="button" @click="$emit('next')">{{ t('upload.next_button') }}</button>
     </div>
 
     <PoweredBySection />
@@ -53,6 +53,7 @@ import PoweredBySection from "./PoweredBySection.vue";
 import PrescriptionValues from "./PrescriptionValues.vue";
 import heic2any from "heic2any";
 import { getWidgetToken, getStoreDomain } from "../utils/index.js";
+import { t } from "../utils/i18n.js";
 
 const props = defineProps({
   productOrderKey: {
@@ -113,7 +114,7 @@ async function handleFileChange(event) {
     if (file.size > maxSize) {
       emit(
         "error",
-        "File size must be less than 20MB. Please choose a smaller file."
+        t('upload.file_size_error')
       );
       return;
     }
@@ -135,7 +136,7 @@ async function handleFileChange(event) {
     const isValidExtension = allowedExtensions.includes(fileExtension);
 
     if (!isValidType && !isValidExtension) {
-      emit("error", "Please upload a JPEG, PNG, WebP, HEIC image file, or PDF file.");
+      emit("error", t('upload.file_type_error'));
       return;
     }
 
@@ -167,7 +168,7 @@ async function handleFileChange(event) {
         emit("update:isLoading", false);
         emit(
           "error",
-          "Failed to convert HEIC image. Please try converting it to JPEG first."
+          t('upload.heic_conversion_error')
         );
         return;
       }
@@ -206,7 +207,7 @@ async function handleFileChange(event) {
       }
     } catch (error) {
       emit("update:isLoading", false);
-      emit("error", "Failed to upload prescription. Please try again.");
+      emit("error", t('upload.upload_error'));
       return;
     }
 
@@ -217,7 +218,7 @@ async function handleFileChange(event) {
       emit("update:file", processedFile);
       emit("update:hasUploadedFile", true);
     } catch (error) {
-      emit("error", "Failed to upload prescription. Please try again.");
+      emit("error", t('upload.upload_error'));
     } finally {
       emit("update:isLoading", false);
     }
@@ -380,7 +381,7 @@ async function storeProductWithPrescription(lensHeroKey, ocrPrescription) {
     const hasProgressive = checkProgressiveOptions(prescriptionData);
     emit("update:hasProgressiveOptions", hasProgressive);
   } catch (error) {
-    emit("error", "Error processing prescription data. Please try again.");
+    emit("error", t('upload.processing_error'));
   }
 }
 

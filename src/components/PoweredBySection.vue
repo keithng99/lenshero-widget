@@ -1,8 +1,12 @@
 <template>
   <div class="lenshero-powered-by">
-    <p>Powered by LensHero</p>
+    <p>{{ t('powered_by.text') }}</p>
   </div>
 </template>
+
+<script setup>
+import { t } from "../utils/i18n.js";
+</script>
 
 <style scoped>
 .lenshero-powered-by {

@@ -1,50 +1,50 @@
 <template>
   <div class="prescription-values">
-    <h3>Detected Prescription Values</h3>
+    <h3>{{ t('prescription.title') }}</h3>
     <div class="eyes-container">
       <div class="eye-section">
-        <h4>Right Eye (OD)</h4>
+        <h4>{{ t('prescription.right_eye') }}</h4>
         <div class="values-grid">
           <div class="value-item">
-            <label class="label" for="right-sph">Sphere (SPH):</label>
+            <label class="label" for="right-sph">{{ t('prescription.sphere') }}:</label>
             <select id="right-sph" v-model="formData.rightEye.SPH" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in sphereOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="right-cyl">Cylinder (CYL):</label>
+            <label class="label" for="right-cyl">{{ t('prescription.cylinder') }}:</label>
             <select id="right-cyl" v-model="formData.rightEye.CYL" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in cylinderOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="right-axis">Axis:</label>
+            <label class="label" for="right-axis">{{ t('prescription.axis') }}:</label>
             <select id="right-axis" v-model="formData.rightEye.AXIS" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="value in axisOptions" :key="value" :value="value">
                 {{ value }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="right-add1">ADD1:</label>
+            <label class="label" for="right-add1">{{ t('prescription.add1') }}:</label>
             <select id="right-add1" v-model="formData.rightEye.ADD1" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in addOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="right-add2">ADD2:</label>
+            <label class="label" for="right-add2">{{ t('prescription.add2') }}:</label>
             <select id="right-add2" v-model="formData.rightEye.ADD2" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in addOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
@@ -53,7 +53,7 @@
           <div class="value-item">
             <label class="label" for="right-pd">PD:</label>
             <select id="right-pd" v-model="formData.rightEye.PD" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="value in pdOptions" :key="value" :value="value">
                 {{ value }}
               </option>
@@ -63,48 +63,48 @@
       </div>
 
       <div class="eye-section">
-        <h4>Left Eye (OS)</h4>
+        <h4>{{ t('prescription.left_eye') }}</h4>
         <div class="values-grid">
           <div class="value-item">
-            <label class="label" for="left-sph">Sphere (SPH):</label>
+            <label class="label" for="left-sph">{{ t('prescription.sphere') }}:</label>
             <select id="left-sph" v-model="formData.leftEye.SPH" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in sphereOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="left-cyl">Cylinder (CYL):</label>
+            <label class="label" for="left-cyl">{{ t('prescription.cylinder') }}:</label>
             <select id="left-cyl" v-model="formData.leftEye.CYL" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in cylinderOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="left-axis">Axis:</label>
+            <label class="label" for="left-axis">{{ t('prescription.axis') }}:</label>
             <select id="left-axis" v-model="formData.leftEye.AXIS" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="value in axisOptions" :key="value" :value="value">
                 {{ value }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="left-add1">ADD1:</label>
+            <label class="label" for="left-add1">{{ t('prescription.add1') }}:</label>
             <select id="left-add1" v-model="formData.leftEye.ADD1" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in addOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
           </div>
           <div class="value-item">
-            <label class="label" for="left-add2">ADD2:</label>
+            <label class="label" for="left-add2">{{ t('prescription.add2') }}:</label>
             <select id="left-add2" v-model="formData.leftEye.ADD2" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="option in addOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
@@ -113,7 +113,7 @@
           <div class="value-item">
             <label class="label" for="left-pd">PD:</label>
             <select id="left-pd" v-model="formData.leftEye.PD" class="value-select">
-              <option value="">Select...</option>
+              <option value="">{{ t('prescription.select') }}</option>
               <option v-for="value in pdOptions" :key="value" :value="value">
                 {{ value }}
               </option>
@@ -127,6 +127,7 @@
 
 <script setup>
 import { ref, watch, nextTick } from "vue";
+import { t } from "../utils/i18n.js";
 
 const props = defineProps({
   ocrData: {

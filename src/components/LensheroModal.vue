@@ -8,7 +8,7 @@
       <!-- Loading Overlay -->
       <LoadingOverlay
         :is-loading="isLoading"
-        message="Uploading your prescription"
+        :message="t('modal.loading')"
       />
 
       <!-- Error Display -->
@@ -76,6 +76,7 @@ import {
   getCachedPricing,
   cachePricing,
 } from "../utils/index.js";
+import { t } from "../utils/i18n.js";
 
 const props = defineProps({
   productOrderKey: {

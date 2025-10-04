@@ -2,9 +2,13 @@ import { createApp, h } from "vue";
 import LensheroWidget from "./components/LensheroWidget.vue";
 import App from "./App.vue";
 import "./style.css";
+import { initI18n } from "./utils/i18n.js";
 
 // Create a function to initialize the widget
-function initWidget(containerId = "lenshero-widget") {
+async function initWidget(containerId = "lenshero-widget") {
+  // Initialize i18n system first
+  await initI18n();
+  
   // Create container if it doesn't exist
   let container = document.getElementById(containerId);
   if (!container) {

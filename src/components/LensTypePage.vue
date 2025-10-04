@@ -1,11 +1,11 @@
 <template>
   <div class="lenshero-page">
-    <h1>Lens Type</h1>
+    <h1>{{ t('lens_type.title') }}</h1>
     <p class="lenshero-modal-description">
       {{
         hasUploadedFile
-          ? "Based on your prescription, choose the type of lenses you need."
-          : "Choose the type of lenses you need."
+          ? t('lens_type.description_with_file')
+          : t('lens_type.description_without_file')
       }}
     </p>
 
@@ -23,14 +23,12 @@
           style="display: none"
         />
         <div class="lenshero-lens-type-header">
-          <h4>Standard Lenses</h4>
+          <h4>{{ t('lens_type.standard.title') }}</h4>
         </div>
         <div class="lenshero-lens-type-description">
-          <p>Single vision lenses for distance or reading</p>
+          <p>{{ t('lens_type.standard.description') }}</p>
           <ul>
-            <li>Clear vision at one distance</li>
-            <li>Most affordable option</li>
-            <li>Perfect for distance or reading</li>
+            <li v-for="feature in t('lens_type.standard.features')" :key="feature">{{ feature }}</li>
           </ul>
         </div>
       </div>
@@ -48,23 +46,21 @@
           style="display: none"
         />
         <div class="lenshero-lens-type-header">
-          <h4>Progressive Lenses</h4>
-          <div class="lenshero-lens-type-price">+500 SEK</div>
+          <h4>{{ t('lens_type.progressive.title') }}</h4>
+          <div class="lenshero-lens-type-price">{{ t('lens_type.progressive.price') }}</div>
         </div>
         <div class="lenshero-lens-type-description">
-          <p>Multifocal lenses for all distances</p>
+          <p>{{ t('lens_type.progressive.description') }}</p>
           <ul>
-            <li>Clear vision at all distances</li>
-            <li>No visible line between zones</li>
-            <li>Ideal for presbyopia</li>
+            <li v-for="feature in t('lens_type.progressive.features')" :key="feature">{{ feature }}</li>
           </ul>
         </div>
       </div>
     </div>
 
     <div class="button-container">
-      <button class="button" @click="$emit('previous')">Back</button>
-      <button class="button" @click="handleNext">Next</button>
+      <button class="button" @click="$emit('previous')">{{ t('lens_type.back_button') }}</button>
+      <button class="button" @click="handleNext">{{ t('lens_type.next_button') }}</button>
     </div>
 
     <PoweredBySection />
@@ -74,6 +70,7 @@
 <script setup>
 import { ref } from "vue";
 import PoweredBySection from "./PoweredBySection.vue";
+import { t } from "../utils/i18n.js";
 
 const props = defineProps({
   isProgressive: {

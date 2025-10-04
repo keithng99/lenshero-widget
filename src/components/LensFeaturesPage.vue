@@ -1,7 +1,7 @@
 <template>
   <div class="lenshero-page">
-    <h1>Lens Features</h1>
-    <p class="rx-subtitle">Choose the types of lens features you want</p>
+    <h1>{{ t('features.title') }}</h1>
+    <p class="rx-subtitle">{{ t('features.description') }}</p>
 
     <div class="lenshero-pricing-container">
       <div
@@ -36,18 +36,18 @@
     </div>
 
     <div class="terms-notice">
-      By submitting, I confirm that I've read and understand the
-      <a href="/terms-and-conditions" target="_blank">Terms and Conditions</a>.
+      {{ t('features.terms_notice') }}
+      <a href="/terms-and-conditions" target="_blank">{{ t('features.terms_link') }}</a>.
     </div>
 
     <div class="button-container">
-      <button class="button" @click="$emit('previous')">Back</button>
+      <button class="button" @click="$emit('previous')">{{ t('features.back_button') }}</button>
       <div class="tooltip-container">
         <button class="button" @click="submitOrder" :disabled="!canSubmit">
-          Submit
+          {{ t('features.submit_button') }}
         </button>
         <span class="tooltip-text">
-          Ensure to upload a clear prescription image before you submit
+          {{ t('features.tooltip_text') }}
         </span>
       </div>
     </div>
@@ -60,6 +60,7 @@
 import { ref, computed } from "vue";
 import PoweredBySection from "./PoweredBySection.vue";
 import { getWidgetToken, setLensHeroOrderKey } from "../utils/index.js";
+import { t } from "../utils/i18n.js";
 
 const props = defineProps({
   productOrderKey: {
@@ -138,7 +139,7 @@ async function submitOrder() {
     );
     console.log("Dispatching lenshero:modal-submitted: ", eventDetail);
   } catch (error) {
-    emit("error", "Failed to submit order. Please try again.");
+    emit("error", t('features.submit_error'));
   } finally {
     emit("update:isLoading", false);
   }
