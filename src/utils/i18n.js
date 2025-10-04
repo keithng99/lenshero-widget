@@ -192,8 +192,9 @@ const EMBEDDED_TRANSLATIONS = {
   },
   de: {
     "widget": {
-      "button": "Rezeptbrille",
-      "button_short": "Brille"
+      "heading": "Rezeptbrille",
+      "description": "Fügen Sie Rezeptbrillen hinzu, indem Sie Ihr Rezept hochladen und Brillen auswählen",
+      "button": "Hochladen"
     },
     "modal": {
       "close": "Schließen",
@@ -205,11 +206,18 @@ const EMBEDDED_TRANSLATIONS = {
       "drag_drop": "Ziehen Sie Ihr Rezept hierher oder klicken Sie zum Auswählen",
       "supported_formats": "Unterstützte Formate: JPG, PNG, PDF, HEIC",
       "upload_button": "Rezept hochladen",
+      "next_button": "Weiter",
       "remove_button": "Entfernen",
       "preview_title": "Rezept-Vorschau",
       "manual_entry": "Rezept manuell eingeben",
       "manual_entry_button": "Manuelle Eingabe",
-      "back_to_upload": "Zurück zum Upload"
+      "back_to_upload": "Zurück zum Upload",
+      "file_size_error": "Datei ist zu groß. Bitte wählen Sie eine kleinere Datei.",
+      "file_type_error": "Ungültiges Dateiformat. Bitte laden Sie ein gültiges Rezept hoch.",
+      "heic_conversion_error": "HEIC-Datei konnte nicht konvertiert werden. Bitte versuchen Sie ein anderes Format.",
+      "upload_error": "Rezept konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.",
+      "processing_error": "Rezept konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut.",
+      "pdf_document": "PDF-Dokument"
     },
     "lens_type": {
       "title": "Linsentyp",
@@ -239,9 +247,13 @@ const EMBEDDED_TRANSLATIONS = {
     },
     "features": {
       "title": "Linsenfunktionen",
-      "description": "Passen Sie Ihre Linsen mit zusätzlichen Funktionen an",
+      "description": "Wählen Sie die Arten von Linsenfunktionen, die Sie möchten",
       "back_button": "Zurück",
-      "submit_button": "Bestellung abschicken"
+      "submit_button": "Abschicken",
+      "terms_notice": "Durch das Abschicken bestätige ich, dass ich die",
+      "terms_link": "Allgemeinen Geschäftsbedingungen",
+      "tooltip_text": "Stellen Sie sicher, dass Sie ein klares Rezeptbild hochladen, bevor Sie abschicken",
+      "submit_error": "Bestellung konnte nicht abgeschickt werden. Bitte versuchen Sie es erneut."
     },
     "errors": {
       "upload_failed": "Rezept konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.",
@@ -252,12 +264,25 @@ const EMBEDDED_TRANSLATIONS = {
     },
     "powered_by": {
       "text": "Unterstützt von LensHero"
+    },
+    "prescription": {
+      "title": "Erkannte Rezeptwerte",
+      "right_eye": "Rechtes Auge (OD)",
+      "left_eye": "Linkes Auge (OS)",
+      "sphere": "Sphäre (SPH)",
+      "cylinder": "Zylinder (CYL)",
+      "axis": "Achse",
+      "add1": "ADD1",
+      "add2": "ADD2",
+      "select": "Auswählen...",
+      "update_button": "Werte aktualisieren"
     }
   },
   fr: {
     "widget": {
-      "button": "Lunettes sur ordonnance",
-      "button_short": "Lunettes"
+      "heading": "Lunettes sur ordonnance",
+      "description": "Ajoutez des lunettes sur ordonnance en téléchargeant votre ordonnance et en choisissant des lunettes",
+      "button": "Télécharger"
     },
     "modal": {
       "close": "Fermer",
@@ -269,11 +294,18 @@ const EMBEDDED_TRANSLATIONS = {
       "drag_drop": "Glissez-déposez votre ordonnance ici, ou cliquez pour sélectionner",
       "supported_formats": "Formats supportés : JPG, PNG, PDF, HEIC",
       "upload_button": "Télécharger l'ordonnance",
+      "next_button": "Suivant",
       "remove_button": "Supprimer",
       "preview_title": "Aperçu de l'ordonnance",
       "manual_entry": "Saisir l'ordonnance manuellement",
       "manual_entry_button": "Saisie manuelle",
-      "back_to_upload": "Retour au téléchargement"
+      "back_to_upload": "Retour au téléchargement",
+      "file_size_error": "Le fichier est trop volumineux. Veuillez choisir un fichier plus petit.",
+      "file_type_error": "Format de fichier invalide. Veuillez télécharger une ordonnance valide.",
+      "heic_conversion_error": "Échec de la conversion du fichier HEIC. Veuillez essayer un autre format.",
+      "upload_error": "Échec du téléchargement de l'ordonnance. Veuillez réessayer.",
+      "processing_error": "Échec du traitement de l'ordonnance. Veuillez réessayer.",
+      "pdf_document": "Document PDF"
     },
     "lens_type": {
       "title": "Type de lentilles",
@@ -303,9 +335,13 @@ const EMBEDDED_TRANSLATIONS = {
     },
     "features": {
       "title": "Fonctionnalités des lentilles",
-      "description": "Personnalisez vos lentilles avec des fonctionnalités supplémentaires",
+      "description": "Choisissez les types de fonctionnalités de lentilles que vous souhaitez",
       "back_button": "Retour",
-      "submit_button": "Soumettre la commande"
+      "submit_button": "Soumettre",
+      "terms_notice": "En soumettant, je confirme avoir lu et compris les",
+      "terms_link": "Conditions générales",
+      "tooltip_text": "Assurez-vous de télécharger une image d'ordonnance claire avant de soumettre",
+      "submit_error": "Échec de la soumission de la commande. Veuillez réessayer."
     },
     "errors": {
       "upload_failed": "Échec du téléchargement de l'ordonnance. Veuillez réessayer.",
@@ -316,12 +352,25 @@ const EMBEDDED_TRANSLATIONS = {
     },
     "powered_by": {
       "text": "Propulsé par LensHero"
+    },
+    "prescription": {
+      "title": "Valeurs d'ordonnance détectées",
+      "right_eye": "Œil droit (OD)",
+      "left_eye": "Œil gauche (OS)",
+      "sphere": "Sphère (SPH)",
+      "cylinder": "Cylindre (CYL)",
+      "axis": "Axe",
+      "add1": "ADD1",
+      "add2": "ADD2",
+      "select": "Sélectionner...",
+      "update_button": "Mettre à jour les valeurs"
     }
   },
   es: {
     "widget": {
-      "button": "Gafas con receta",
-      "button_short": "Gafas"
+      "heading": "Gafas con receta",
+      "description": "Añade gafas con receta subiendo tu receta y eligiendo gafas",
+      "button": "Subir"
     },
     "modal": {
       "close": "Cerrar",
@@ -333,11 +382,18 @@ const EMBEDDED_TRANSLATIONS = {
       "drag_drop": "Arrastra y suelta tu receta aquí, o haz clic para seleccionar",
       "supported_formats": "Formatos soportados: JPG, PNG, PDF, HEIC",
       "upload_button": "Subir receta",
+      "next_button": "Siguiente",
       "remove_button": "Eliminar",
       "preview_title": "Vista previa de la receta",
       "manual_entry": "Introducir receta manualmente",
       "manual_entry_button": "Entrada manual",
-      "back_to_upload": "Volver a subir"
+      "back_to_upload": "Volver a subir",
+      "file_size_error": "El archivo es demasiado grande. Por favor, elige un archivo más pequeño.",
+      "file_type_error": "Formato de archivo inválido. Por favor, sube una receta válida.",
+      "heic_conversion_error": "Error al convertir archivo HEIC. Por favor, prueba con otro formato.",
+      "upload_error": "Error al subir la receta. Por favor, inténtalo de nuevo.",
+      "processing_error": "Error al procesar la receta. Por favor, inténtalo de nuevo.",
+      "pdf_document": "Documento PDF"
     },
     "lens_type": {
       "title": "Tipo de lentes",
@@ -367,9 +423,13 @@ const EMBEDDED_TRANSLATIONS = {
     },
     "features": {
       "title": "Características de las lentes",
-      "description": "Personaliza tus lentes con características adicionales",
+      "description": "Elige los tipos de características de lentes que quieres",
       "back_button": "Atrás",
-      "submit_button": "Enviar pedido"
+      "submit_button": "Enviar",
+      "terms_notice": "Al enviar, confirmo que he leído y entiendo los",
+      "terms_link": "Términos y Condiciones",
+      "tooltip_text": "Asegúrate de subir una imagen clara de la receta antes de enviar",
+      "submit_error": "Error al enviar el pedido. Por favor, inténtalo de nuevo."
     },
     "errors": {
       "upload_failed": "Error al subir la receta. Por favor, inténtalo de nuevo.",
@@ -380,6 +440,18 @@ const EMBEDDED_TRANSLATIONS = {
     },
     "powered_by": {
       "text": "Desarrollado por LensHero"
+    },
+    "prescription": {
+      "title": "Valores de receta detectados",
+      "right_eye": "Ojo derecho (OD)",
+      "left_eye": "Ojo izquierdo (OS)",
+      "sphere": "Esfera (SPH)",
+      "cylinder": "Cilindro (CYL)",
+      "axis": "Eje",
+      "add1": "ADD1",
+      "add2": "ADD2",
+      "select": "Seleccionar...",
+      "update_button": "Actualizar valores"
     }
   }
 };
